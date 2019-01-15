@@ -1,0 +1,15 @@
+dist: trusty
+
+language: go
+go:
+  - "1.11.x"
+
+jobs:
+  include:
+  - if: type = pull_request
+    script: make checks && 
+            bash <(curl -s https://codecov.io/bash)
+  - if: tag IS present
+            make checks && 
+            bash <(curl -s https://codecov.io/bash) && 
+            make release

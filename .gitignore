@@ -1,0 +1,11 @@
+" goreleaser
+dist/
+
+" golangci-lint
+bin/
+
+" binary created by "build" recipe
+gitlint
+
+" test coverage
+coverage.txt

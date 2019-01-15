@@ -1,0 +1,10 @@
+{
+    "Aggregate": true,
+    "Cyclo": 10,
+    "EnableAll": true,
+    "EnableGC": true,
+    "LineLength": 100,
+    "Test": true,
+    "Vendor": true,
+    "WarnUnmatchedDirective": true
+}
