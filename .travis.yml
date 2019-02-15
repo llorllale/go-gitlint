@@ -9,6 +9,7 @@ jobs:
   - if: type = pull_request
     script: make checks && 
             bash <(curl -s https://codecov.io/bash)
+  - if: tag IS blank AND branch = master
   - if: tag IS present
             make checks && 
             bash <(curl -s https://codecov.io/bash) && 
