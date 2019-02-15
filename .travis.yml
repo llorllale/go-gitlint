@@ -6,11 +6,8 @@ go:
 
 jobs:
   include:
-  - if: type = pull_request
+  - if: (type = pull_request) OR (type = push AND branch = master)
     script: make checks && 
-            bash <(curl -s https://codecov.io/bash)
-  - if: tag IS blank AND branch = master
-    script: make checks &&
             bash <(curl -s https://codecov.io/bash)
   - if: tag IS present
             make checks && 
