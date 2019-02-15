@@ -10,6 +10,6 @@ jobs:
     script: make checks && 
             bash <(curl -s https://codecov.io/bash)
   - if: tag IS present
-            make checks && 
+    script: make checks && 
             bash <(curl -s https://codecov.io/bash) && 
             make release
