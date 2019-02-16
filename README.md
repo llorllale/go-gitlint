@@ -27,7 +27,7 @@ Just open a PR, make sure `make checks` works.
 To run `make checks` you will need:
 
 * Go `1.11.x`
-* Python 2.7+ (for `pdd`)
-* [pdd](https://github.com/yegor256/pdd) (a python gem - `gem install pdd`)
+* Ruby 2.x (for `pdd`)
+* [pdd](https://github.com/yegor256/pdd) (a ruby gem - `gem install pdd`)
 * [golangci-lint](https://github.com/golangci/golangci-lint) v1.14.0 (expected to be in the `./bin` folder)
 
