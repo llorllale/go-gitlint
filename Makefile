@@ -32,7 +32,7 @@ test:
 
 lint:
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.14.0
-	CGO_ENABLED=0 ./bin/golangci-lint run -v
+	./bin/golangci-lint run -v
 
 checks: build lint test
 

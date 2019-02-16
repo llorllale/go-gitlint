@@ -1,5 +1,9 @@
-# This file contains all available configuration options
-# with their default values.
+service:
+  # project-path: github.com/llorllale/go-gitlint
+  golangci-lint-version: 1.14.x
+  # prepare:
+  #  - make deps
+  #  - make generate
 
 # options for analysis running
 run:
@@ -45,7 +49,10 @@ run:
   # directory holds the correct copies of dependencies and ignores
   # the dependency descriptions in go.mod.
   #  modules-download-mode: readonly|release|vendor
-  modules-download-mode: readonly
+  #
+  #  @todo #1 Enable this configuration after this golangci-lint issue is
+  #   fixed: https://github.com/golangci/golangci-lint/issues/397
+  #modules-download-mode: readonly
 
 
 # output configuration options
