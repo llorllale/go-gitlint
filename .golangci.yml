@@ -51,7 +51,9 @@ run:
   #  modules-download-mode: readonly|release|vendor
   #
   #  @todo #1 Enable this configuration after this golangci-lint issue is
-  #   fixed: https://github.com/golangci/golangci-lint/issues/397
+  #   fixed: https://github.com/golangci/golangci-lint/issues/397. According
+  #   to the golangci-lint docs, this config is desirable since the CI build
+  #   should not be required to update go.mod.
   #modules-download-mode: readonly
 
 
