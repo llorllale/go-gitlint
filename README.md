@@ -19,3 +19,15 @@ As an architect of other (not necessarily golang) projects hosted on GitHub I ne
 * Lint commit msgs on varios development platforms (Windows, Linux, Mac)
 * (BONUS) Pre-commit hook to validate my commit's msg
 * (BONUS) Performance (because a slow pre-commit hook would render the git workflow unmanageable)
+
+## Contributing
+Just open a PR, make sure `make checks` works.
+
+## Dependencies
+To run `make checks` you will need:
+
+* Go `1.11.x`
+* Python 2.7+ (for `pdd`)
+* [pdd](https://github.com/yegor256/pdd) (a python gem - `gem install pdd`)
+* [golangci-lint](https://github.com/golangci/golangci-lint) v1.14.0 (expected to be in the `./bin` folder)
+

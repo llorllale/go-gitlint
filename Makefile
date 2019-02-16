@@ -20,7 +20,8 @@
 # build:   builds the binary
 # test:    runs tests
 # lint:    runs linters
-# checks:  runs build+test+lint
+# pdd:     runs pdd (see https://github.com/yegor256/pdd)
+# checks:  runs build+test+pdd+lint
 # release: releases to GitHub (requires GitHub token)
 #
 
@@ -31,10 +32,12 @@ test:
 	go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./...
 
 lint:
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.14.0
 	./bin/golangci-lint run -v
 
-checks: build lint test
+pdd:
+	pdd --file=puzzles.xml
+
+checks: build lint pdd test
 
 release:
 	./release.sh
