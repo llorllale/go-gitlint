@@ -9,6 +9,7 @@ gitlint
 
 " test coverage
 coverage.txt
+cov_check.txt
 
 " PDD output file
 puzzles.xml
