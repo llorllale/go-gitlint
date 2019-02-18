@@ -23,7 +23,7 @@ As an architect of other (not necessarily golang) projects hosted on GitHub I ne
 ## Contributing
 Just open a PR, make sure `make checks` works.
 
-## Dependencies
+## Build dependencies
 To run `make checks` you will need:
 
 * Go `1.11.x`

@@ -32,7 +32,7 @@ test:
 	go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./...
 
 lint:
-	./bin/golangci-lint run -v
+	./bin/golangci-lint run
 
 pdd:
 	pdd --file=puzzles.xml
