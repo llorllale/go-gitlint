@@ -2,7 +2,9 @@ package commits
 
 import (
 	"fmt"
+	"io"
 
+	"github.com/llorllale/go-gitlint/internal/repo"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
@@ -22,47 +24,51 @@ type Commit struct {
 	Body    string
 }
 
-// In returns commits in the path.
+// In returns the commits in the repo.
 // @todo #4 These err checks are extremely annoying. Figure out
 //  how to handle them elegantly and reduce the cyclo complexity
 //  of this function (currently at 4).
-func In(path string) Commits {
-	repo, err := git.PlainOpen(path)
-	if err != nil {
-		panic(err)
+func In(repository repo.Repo) Commits {
+	return func() []*Commit {
+		r := repository()
+		ref, err := r.Head()
+		if err != nil {
+			panic(err)
+		}
+		iter, err := r.Log(&git.LogOptions{From: ref.Hash()})
+		if err != nil {
+			panic(err)
+		}
+		commits := make([]*Commit, 0)
+		_ = iter.ForEach(func(c *object.Commit) error { //nolint[errcheck]
+			commits = append(
+				commits,
+				&Commit{
+					Hash: c.Hash.String(),
+					// @todo #4 Figure out how to split the commit's message into a subject
+					//  and a body. I believe the separator is the first instance of the
+					//  CRLFCRLF sequence.
+					Subject: "don't know",
+					Body:    c.Message,
+				},
+			)
+			return nil
+		})
+		return commits
 	}
-	ref, err := repo.Head()
-	if err != nil {
-		panic(err)
-	}
-	iter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
-	if err != nil {
-		panic(err)
-	}
-	commits := make([]*Commit, 0)
-	_ = iter.ForEach(func(c *object.Commit) error { //nolint[errcheck]
-		commits = append(
-			commits,
-			&Commit{
-				Hash: c.Hash.String(),
-				// @todo #4 Figure out how to split the commit's message into a subject
-				//  and a body. I believe the separator is the first instance of the
-				//  CRLFCRLF sequence.
-				Subject: "don't know",
-				Body:    c.Message,
-			},
-		)
-		return nil
-	})
-	return func() []*Commit { return commits }
 }
 
-// Printed prints the commits to stdout.
-func Printed(commits Commits) Commits {
+// Printed prints the commits to the file.
+func Printed(commits Commits, writer io.Writer, sep string) Commits {
 	return func() []*Commit {
 		input := commits()
 		for _, c := range input {
-			fmt.Printf("%s\n", &pretty{c})
+			_, err := writer.Write(
+				[]byte(fmt.Sprintf("%s%s", &pretty{c}, sep)),
+			)
+			if err != nil {
+				panic(err)
+			}
 		}
 		return input
 	}
