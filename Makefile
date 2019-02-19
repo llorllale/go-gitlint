@@ -40,7 +40,10 @@ lint:
 pdd:
 	pdd --file=puzzles.xml
 
-checks: build lint pdd test coverage
+license:
+	${GOPATH}/bin/weasel
+
+checks: build lint pdd license test coverage
 
 release:
 	./release.sh
