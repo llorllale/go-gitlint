@@ -32,23 +32,23 @@ import (
 )
 
 func TestIn(t *testing.T) {
-	msgs := []string{"commit1", "commit2", "commit3"}
+	msgs := []string{"subject1\n\nbody1", "subject2\n\nbody2", "subject3\n\nbody3"}
 	r, cleanup := tmpRepo(msgs...)
 	defer cleanup()
 	commits := In(r)()
 	assert.Len(t, commits, len(msgs),
 		"commits.In() did not return the correct number of commits")
 	for i, msg := range msgs {
-		assert.Equal(t, msg, commits[len(commits)-i-1].Body,
-			"commits.In() returned commits with incorrect body messages")
+		commit := commits[len(commits)-i-1]
+		assert.Equal(t, msg, commit.Subject()+"\n\n"+commit.Body(),
+			"commits.In() returned commits with incorrect message subjects or bodies")
 	}
 }
 
 func TestPrinted(t *testing.T) {
 	commit := &Commit{
-		Hash:    "abc123",
-		Subject: "subject",
-		Body:    "body",
+		hash:    "abc123",
+		message: "this is a test message",
 	}
 	const sep = " "
 	buffer := &bytes.Buffer{}

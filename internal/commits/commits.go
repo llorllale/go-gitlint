@@ -17,6 +17,7 @@ package commits
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/llorllale/go-gitlint/internal/repo"
 	git "gopkg.in/src-d/go-git.v4"
@@ -33,9 +34,28 @@ type Commits func() []*Commit
 
 // Commit holds data for a single git commit.
 type Commit struct {
-	Hash    string
-	Subject string
-	Body    string
+	hash    string
+	message string
+}
+
+// Hash is the commit's ID.
+func (c *Commit) Hash() string {
+	return c.hash
+}
+
+// Subject is the commit message's subject line.
+func (c *Commit) Subject() string {
+	return strings.Split(c.message, "\n\n")[0]
+}
+
+// Body is the commit message's body.
+func (c *Commit) Body() string {
+	body := ""
+	parts := strings.Split(c.message, "\n\n")
+	if len(parts) > 1 {
+		body = strings.Join(parts[1:], "")
+	}
+	return body
 }
 
 // In returns the commits in the repo.
@@ -58,12 +78,8 @@ func In(repository repo.Repo) Commits {
 			commits = append(
 				commits,
 				&Commit{
-					Hash: c.Hash.String(),
-					// @todo #4 Figure out how to split the commit's message into a subject
-					//  and a body. I believe the separator is the first instance of the
-					//  CRLFCRLF sequence.
-					Subject: "don't know",
-					Body:    c.Message,
+					hash:    c.Hash.String(),
+					message: c.Message,
 				},
 			)
 			return nil
@@ -96,6 +112,6 @@ type pretty struct {
 func (p *pretty) String() string {
 	return fmt.Sprintf(
 		"hash: %s subject=%s body=%s",
-		p.Commit.Hash, p.Commit.Subject, p.Commit.Body,
+		p.Commit.Hash(), p.Commit.Subject(), p.Commit.Body(),
 	)
 }
