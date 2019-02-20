@@ -30,5 +30,5 @@ To run `make checks` you will need:
 * Ruby 2.x (for `pdd`)
 * [pdd](https://github.com/yegor256/pdd) (a ruby gem - `gem install pdd`)
 * [golangci-lint](https://github.com/golangci/golangci-lint) v1.14.0 (expected to be in the `./bin` folder)
-* [weasel](https://github.com/comcast/weasel)(`go get github.com/comcast/weasel`)
+* [weasel](https://github.com/comcast/weasel) (`go get github.com/comcast/weasel`)
 

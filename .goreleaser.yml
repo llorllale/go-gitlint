@@ -8,6 +8,9 @@
 #    - go generate ./...
 
 project_name: go-gitlint
+before:
+  hooks:
+    - go mod download
 builds:
   -
     env:

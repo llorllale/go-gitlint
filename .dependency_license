@@ -11,3 +11,4 @@ go\.sum, Ignore
 \.goreleaser\.yml, Ignore
 \.pdd, Ignore
 \.travis\.yml, Ignore
+\.idea, Ignore

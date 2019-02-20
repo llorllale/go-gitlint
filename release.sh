@@ -19,4 +19,5 @@ docker run --rm --privileged \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-w /go/src/github.com/user/repo \
 	-e GITHUB_TOKEN \
-	goreleaser/goreleaser:v0.101-cgo release
+	-e GO111MODULE=on \
+	goreleaser/goreleaser:v0.101 release --rm-dist
