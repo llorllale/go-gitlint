@@ -35,7 +35,6 @@ release:
   name_template: "{{.Tag}}"
   prerelease: auto
 changelog:
-  sort: asc
   filters:
     exclude:
     - '^docs:'
