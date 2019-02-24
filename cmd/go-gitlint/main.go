@@ -18,6 +18,8 @@ import (
 	"os"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
+	"github.com/llorllale/go-gitlint/internal/commits/filter"
+	"github.com/llorllale/go-gitlint/internal/commits/issues"
 	"github.com/llorllale/go-gitlint/internal/repo"
 )
 
@@ -25,11 +27,20 @@ import (
 //  flag instead of being hard coded. All other configuration
 //  options should be passed in through CLI as well.
 func main() {
-	commits.Printed(
-		commits.In(
-			repo.Filesystem("."),
+	os.Exit(
+		len(
+			issues.Printed(
+				os.Stdout, "\n",
+				issues.Collected(
+					[]func(*commits.Commit) issues.Issue{
+						filter.OfSubjectRegex(".{,1}"),
+						filter.OfBodyRegex(".{,1}"),
+					},
+					commits.In(
+						repo.Filesystem("."),
+					),
+				),
+			)(),
 		),
-		os.Stdout,
-		"\n",
-	)()
+	)
 }

@@ -15,7 +15,6 @@
 package commits
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -31,6 +30,29 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
+func TestCommitID(t *testing.T) {
+	const ID = "test ID"
+	assert.Equal(t,
+		(&Commit{Hash: ID}).ID(), ID,
+		"Commit.ID() must return the commit's hash")
+}
+
+func TestCommitSubject(t *testing.T) {
+	const subject = "test subject"
+	assert.Equal(t,
+		(&Commit{Message: subject + "\n\ntest body"}).Subject(),
+		subject,
+		`Commit.Subject() must return the substring before the first \n\n`)
+}
+
+func TestCommitBody(t *testing.T) {
+	const body = "test body"
+	assert.Equal(t,
+		(&Commit{Message: "test subject\n\n" + body}).Body(),
+		body,
+		`Commit.Body() must return the substring after the first \n\n`)
+}
+
 func TestIn(t *testing.T) {
 	msgs := []string{"subject1\n\nbody1", "subject2\n\nbody2", "subject3\n\nbody3"}
 	r, cleanup := tmpRepo(msgs...)
@@ -43,22 +65,6 @@ func TestIn(t *testing.T) {
 		assert.Equal(t, msg, commit.Subject()+"\n\n"+commit.Body(),
 			"commits.In() returned commits with incorrect message subjects or bodies")
 	}
-}
-
-func TestPrinted(t *testing.T) {
-	commit := &Commit{
-		hash:    "abc123",
-		message: "this is a test message",
-	}
-	const sep = " "
-	buffer := &bytes.Buffer{}
-	_ = Printed(
-		func() []*Commit { return []*Commit{commit} },
-		buffer,
-		sep,
-	)()
-	assert.Equal(t, (&pretty{commit}).String()+sep, string(buffer.Bytes()),
-		"commits.Printed() did not pretty-print the commit correctly")
 }
 
 // A git repo initialized and with one commit per each of the messages provided.

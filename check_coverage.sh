@@ -19,6 +19,9 @@ let THRESHOLD=80
 
 let exit_code=0
 
+# @todo #16 The coverage script is ignoring packages that are not tested
+#  at all (0% coverage). It should be fixed so that all packages are
+#  tested (except for main).
 while read line; do
 	if [ "$(echo $line | grep coverage)" != "" ]; then
 		pkg=$(echo $line | sed 's/\s\+/ /g' | sed 's/%//' | cut -d ' ' -f 2)
