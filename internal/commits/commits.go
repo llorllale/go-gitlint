@@ -15,8 +15,6 @@
 package commits
 
 import (
-	"fmt"
-	"io"
 	"strings"
 
 	"github.com/llorllale/go-gitlint/internal/repo"
@@ -34,24 +32,24 @@ type Commits func() []*Commit
 
 // Commit holds data for a single git commit.
 type Commit struct {
-	hash    string
-	message string
+	Hash    string
+	Message string
 }
 
-// Hash is the commit's ID.
-func (c *Commit) Hash() string {
-	return c.hash
+// ID is the commit's hash.
+func (c *Commit) ID() string {
+	return c.Hash
 }
 
 // Subject is the commit message's subject line.
 func (c *Commit) Subject() string {
-	return strings.Split(c.message, "\n\n")[0]
+	return strings.Split(c.Message, "\n\n")[0]
 }
 
 // Body is the commit message's body.
 func (c *Commit) Body() string {
 	body := ""
-	parts := strings.Split(c.message, "\n\n")
+	parts := strings.Split(c.Message, "\n\n")
 	if len(parts) > 1 {
 		body = strings.Join(parts[1:], "")
 	}
@@ -78,40 +76,12 @@ func In(repository repo.Repo) Commits {
 			commits = append(
 				commits,
 				&Commit{
-					hash:    c.Hash.String(),
-					message: c.Message,
+					Hash:    c.Hash.String(),
+					Message: c.Message,
 				},
 			)
 			return nil
 		})
 		return commits
 	}
-}
-
-// Printed prints the commits to the file.
-func Printed(commits Commits, writer io.Writer, sep string) Commits {
-	return func() []*Commit {
-		input := commits()
-		for _, c := range input {
-			_, err := writer.Write(
-				[]byte(fmt.Sprintf("%s%s", &pretty{c}, sep)),
-			)
-			if err != nil {
-				panic(err)
-			}
-		}
-		return input
-	}
-}
-
-// a Stringer for pretty-printing the commit.
-type pretty struct {
-	*Commit
-}
-
-func (p *pretty) String() string {
-	return fmt.Sprintf(
-		"hash: %s subject=%s body=%s",
-		p.Commit.Hash(), p.Commit.Subject(), p.Commit.Body(),
-	)
 }
