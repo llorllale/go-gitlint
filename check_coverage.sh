@@ -16,15 +16,16 @@
 # 
 
 let THRESHOLD=80
+IGNORE=github.com/llorllale/go-gitlint/cmd/go-gitlint
 
 let exit_code=0
 
-# @todo #16 The coverage script is ignoring packages that are not tested
-#  at all (0% coverage). It should be fixed so that all packages are
-#  tested (except for main).
 while read line; do
-	if [ "$(echo $line | grep coverage)" != "" ]; then
-		pkg=$(echo $line | sed 's/\s\+/ /g' | sed 's/%//' | cut -d ' ' -f 2)
+	pkg=$(echo $line | sed 's/\s\+/ /g' | sed 's/%//' | cut -d ' ' -f 2)
+	if [[ "$(echo $line | grep 'no test files')" != "" && "$pkg" != "$IGNORE" ]]; then
+		echo "No coverage for package [$pkg]"
+		let exit_code++
+	elif [[ "$(echo $line | grep coverage)" != "" ]]; then
 		cov=$(echo $line | sed 's/\s\+/ /g' | sed 's/%//' | cut -d ' ' -f 5)
 		if [ 1 -eq $(echo "$THRESHOLD > $cov" | bc) ]; then
 			echo "Coverage [$cov] for package [$pkg] is below threshold [$THRESHOLD]"
