@@ -12,32 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package filter
+package issues
 
 import (
 	"fmt"
 	"regexp"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
-	"github.com/llorllale/go-gitlint/internal/commits/issues"
 )
 
-/*
-	Filters identify issues with a commit.
-	A filter returning a zero-valued Issue signals that it found no issue
-	with the commit.
-*/
+// Filter identifies an issue with a commit.
+// A filter returning a zero-valued Issue signals that it found no issue
+// with the commit.
+type Filter func(*commits.Commit) Issue
 
 // OfSubjectRegex tests a commit's subject with the regex.
-func OfSubjectRegex(regex string) func(*commits.Commit) issues.Issue {
-	return func(c *commits.Commit) issues.Issue {
-		var issue issues.Issue
+func OfSubjectRegex(regex string) Filter {
+	return func(c *commits.Commit) Issue {
+		var issue Issue
 		matched, err := regexp.MatchString(regex, c.Subject())
 		if err != nil {
 			panic(err)
 		}
 		if !matched {
-			issue = issues.Issue{
+			issue = Issue{
 				Desc:   fmt.Sprintf("subject does not match regex [%s]", regex),
 				Commit: *c,
 			}
@@ -47,15 +45,15 @@ func OfSubjectRegex(regex string) func(*commits.Commit) issues.Issue {
 }
 
 // OfBodyRegex tests a commit's body with the regex.
-func OfBodyRegex(regex string) func(*commits.Commit) issues.Issue {
-	return func(c *commits.Commit) issues.Issue {
-		var issue issues.Issue
+func OfBodyRegex(regex string) Filter {
+	return func(c *commits.Commit) Issue {
+		var issue Issue
 		matched, err := regexp.MatchString(regex, c.Body())
 		if err != nil {
 			panic(err)
 		}
 		if !matched {
-			issue = issues.Issue{
+			issue = Issue{
 				Desc:   fmt.Sprintf("body does not conform to regex [%s]", regex),
 				Commit: *c,
 			}

@@ -18,8 +18,7 @@ import (
 	"os"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
-	"github.com/llorllale/go-gitlint/internal/commits/filter"
-	"github.com/llorllale/go-gitlint/internal/commits/issues"
+	"github.com/llorllale/go-gitlint/internal/issues"
 	"github.com/llorllale/go-gitlint/internal/repo"
 )
 
@@ -32,9 +31,9 @@ func main() {
 			issues.Printed(
 				os.Stdout, "\n",
 				issues.Collected(
-					[]func(*commits.Commit) issues.Issue{
-						filter.OfSubjectRegex(".{,1}"),
-						filter.OfBodyRegex(".{,1}"),
+					[]issues.Filter{
+						issues.OfSubjectRegex(".{,1}"),
+						issues.OfBodyRegex(".{,1}"),
 					},
 					commits.In(
 						repo.Filesystem("."),

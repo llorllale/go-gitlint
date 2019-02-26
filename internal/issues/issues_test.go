@@ -27,7 +27,7 @@ func TestCollected(t *testing.T) {
 		{Hash: "456"},
 	}
 	issues := Collected(
-		[]func(*commits.Commit) Issue{
+		[]Filter{
 			func(c *commits.Commit) Issue {
 				var issue Issue
 				if c.Hash == "123" || c.Hash == "456" {
