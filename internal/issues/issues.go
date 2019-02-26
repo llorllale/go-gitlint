@@ -35,7 +35,7 @@ func (i *Issue) String() string {
 type Issues func() []Issue
 
 // Collected returns a collection of issues identified.
-func Collected(filters []func(c *commits.Commit) Issue, cmts commits.Commits) Issues {
+func Collected(filters []Filter, cmts commits.Commits) Issues {
 	return func() []Issue {
 		issues := make([]Issue, 0)
 		for _, c := range cmts() {
