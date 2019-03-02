@@ -23,8 +23,9 @@ import (
 )
 
 var (
-	subjectRegex = kingpin.Flag("subject-regex", "Filters commit subjects based on a regular expression.").String()    //nolint[gochecknoglobals]
-	bodyRegex    = kingpin.Flag("body-regex", "Filters commit message bodies based on a regular expression.").String() //nolint[gochecknoglobals]
+	subjectRegex  = kingpin.Flag("subject-regex", "Filters commit subjects based on a regular expression.").String()    //nolint[gochecknoglobals]
+	subjectLength = kingpin.Flag("subject-len", "Filters commit subjects based on length.").Int()                       //nolint[gochecknoglobals]
+	bodyRegex     = kingpin.Flag("body-regex", "Filters commit message bodies based on a regular expression.").String() //nolint[gochecknoglobals]
 )
 
 // Filter identifies an issue with a commit.
@@ -40,6 +41,9 @@ func Filters() []Filter {
 	}
 	if bodyRegex != nil {
 		filters = append(filters, OfBodyRegex(*bodyRegex))
+	}
+	if subjectLength != nil && *subjectLength > 0 {
+		filters = append(filters, OfSubjectLength(*subjectLength))
 	}
 	return filters
 }
@@ -73,6 +77,20 @@ func OfBodyRegex(regex string) Filter {
 		if !matched {
 			issue = Issue{
 				Desc:   fmt.Sprintf("body does not conform to regex [%s]", regex),
+				Commit: *c,
+			}
+		}
+		return issue
+	}
+}
+
+// OfSubjectLength tests a commit subject's length.
+func OfSubjectLength(length int) Filter {
+	return func(c *commits.Commit) Issue {
+		var issue Issue
+		if len(c.Subject()) > length {
+			issue = Issue{
+				Desc:   fmt.Sprintf("subject is longer than %d", length),
 				Commit: *c,
 			}
 		}

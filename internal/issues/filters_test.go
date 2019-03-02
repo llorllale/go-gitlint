@@ -24,9 +24,11 @@ import (
 func TestFilters(t *testing.T) {
 	sr := "abc123"
 	br := "bodyRegex"
+	sl := 5
 	subjectRegex = &sr
 	bodyRegex = &br
-	assert.Len(t, Filters(), 2)
+	subjectLength = &sl
+	assert.Len(t, Filters(), 3)
 }
 
 func TestOfSubjectRegexMatch(t *testing.T) {
@@ -70,5 +72,27 @@ func TestOfBodyRegexNonMatch(t *testing.T) {
 			},
 		),
 		"filter.OfBodyRegex() must not match if the commit's subject does not match the regex",
+	)
+}
+
+func TestOfSubjectLengthMatch(t *testing.T) {
+	assert.NotZero(t,
+		OfSubjectLength(5)(
+			&commits.Commit{
+				Message: "very very very VERY long subject\n\nand body",
+			},
+		),
+		"filter.OfSubjectLength() must match if the commit's subject is too long",
+	)
+}
+
+func TestOfSubjectLengthNonMatch(t *testing.T) {
+	assert.Zero(t,
+		OfSubjectLength(10)(
+			&commits.Commit{
+				Message: "short\n\nmessage",
+			},
+		),
+		"filter.OfSubjectLength() must not match if the commit's subject is not too long",
 	)
 }
