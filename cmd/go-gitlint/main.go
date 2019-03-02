@@ -20,26 +20,46 @@ import (
 	"github.com/llorllale/go-gitlint/internal/commits"
 	"github.com/llorllale/go-gitlint/internal/issues"
 	"github.com/llorllale/go-gitlint/internal/repo"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-// @todo #4 The path should be passed in as a command line
-//  flag instead of being hard coded. All other configuration
-//  options should be passed in through CLI as well.
+// @todo #9 Global variables are a code smell (especially those in filterse.go).
+//  They promote coupling across different components inside the same package.
+//  Figure out a way to remove these global variables. Whatever command line
+//  parser we choose should be able to auto-generate usage.
+var path = kingpin.Flag("path", `Path to the git repo ("." by default).`).Default(".").String() //nolint[gochecknoglobals]
+
 func main() {
+	configure()
 	os.Exit(
 		len(
 			issues.Printed(
 				os.Stdout, "\n",
 				issues.Collected(
-					[]issues.Filter{
-						issues.OfSubjectRegex(".{,1}"),
-						issues.OfBodyRegex(".{,1}"),
-					},
+					issues.Filters(),
 					commits.In(
-						repo.Filesystem("."),
+						repo.Filesystem(*path),
 					),
 				),
 			)(),
 		),
 	)
+}
+
+func configure() {
+	var args []string
+	if len(os.Args) > 1 {
+		args = append(args, os.Args[1:]...)
+	}
+	const file = ".gitlint"
+	if _, err := os.Stat(file); err == nil {
+		config, err := kingpin.ExpandArgsFromFile(file)
+		if err != nil {
+			panic(err)
+		}
+		args = append(args, config...)
+	}
+	if _, err := kingpin.CommandLine.Parse(args); err != nil {
+		panic(err)
+	}
 }
