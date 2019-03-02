@@ -21,6 +21,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFilters(t *testing.T) {
+	sr := "abc123"
+	br := "bodyRegex"
+	subjectRegex = &sr
+	bodyRegex = &br
+	assert.Len(t, Filters(), 2)
+}
+
 func TestOfSubjectRegexMatch(t *testing.T) {
 	assert.Zero(t,
 		OfSubjectRegex(`\(#\d+\) [\w ]{10,50}`)(
