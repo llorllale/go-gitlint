@@ -15,9 +15,9 @@
 package issues
 
 import (
-	"fmt"
 	"io"
 
+	"github.com/fatih/color"
 	"github.com/llorllale/go-gitlint/internal/commits"
 )
 
@@ -25,10 +25,6 @@ import (
 type Issue struct {
 	Desc   string
 	Commit commits.Commit
-}
-
-func (i *Issue) String() string {
-	return fmt.Sprintf("Issue{Desc=%s Commit=%+v}", i.Desc, i.Commit)
 }
 
 // Issues is a collection of Issues.
@@ -42,7 +38,6 @@ func Collected(filters []Filter, cmts commits.Commits) Issues {
 			for _, f := range filters {
 				if issue := f(c); issue != (Issue{}) {
 					issues = append(issues, issue)
-					break
 				}
 			}
 		}
@@ -54,10 +49,13 @@ func Collected(filters []Filter, cmts commits.Commits) Issues {
 func Printed(w io.Writer, sep string, issues Issues) Issues {
 	return func() []Issue {
 		iss := issues()
-		for i := range iss {
-			_, err := w.Write(
-				[]byte(fmt.Sprintf("%s%s", iss[i].String(), sep)),
-			)
+		for idx := range iss {
+			i := iss[idx]
+			_, err := color.New(color.Bold).Fprintf(w, "%s: ", i.Commit.ShortID())
+			if err != nil {
+				panic(err)
+			}
+			_, err = color.New(color.FgRed).Fprintf(w, "%s%s", i.Desc, sep)
 			if err != nil {
 				panic(err)
 			}

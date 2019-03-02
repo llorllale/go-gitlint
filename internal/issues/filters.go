@@ -90,7 +90,7 @@ func OfSubjectLength(length int) Filter {
 		var issue Issue
 		if len(c.Subject()) > length {
 			issue = Issue{
-				Desc:   fmt.Sprintf("subject is longer than %d", length),
+				Desc:   fmt.Sprintf("subject exceeds length [%d]", length),
 				Commit: *c,
 			}
 		}

@@ -15,6 +15,7 @@
 package issues
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
@@ -60,21 +61,21 @@ func TestPrinted(t *testing.T) {
 		{
 			Desc: "issueA",
 			Commit: commits.Commit{
-				Hash:    "1",
+				Hash:    "18045269d8d2fd8f53d01883c6c7b548d0b9e3ae",
 				Message: "first commit",
 			},
 		},
 		{
 			Desc: "issueB",
 			Commit: commits.Commit{
-				Hash:    "2",
+				Hash:    "4be918ff8bfc91de77a1462707a8d2eb30956f93",
 				Message: "second commit",
 			},
 		},
 	}
 	var expected string
 	for _, i := range issues {
-		expected = expected + i.String() + sep
+		expected += fmt.Sprintf("%s: %s%s", i.Commit.ShortID(), i.Desc, sep)
 	}
 	writer := &mockWriter{}
 	Printed(
@@ -85,7 +86,7 @@ func TestPrinted(t *testing.T) {
 	)()
 	assert.Equal(t,
 		expected, writer.msg,
-		"issues.Printed() must concatenate Issue.String() with the separator")
+		"issues.Printed() must join Commit.ShortID() and the Issue.Desc with the separator")
 }
 
 type mockWriter struct {
