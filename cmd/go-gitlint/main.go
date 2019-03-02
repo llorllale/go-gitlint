@@ -47,10 +47,7 @@ func main() {
 }
 
 func configure() {
-	var args []string
-	if len(os.Args) > 1 {
-		args = append(args, os.Args[1:]...)
-	}
+	args := os.Args[1:]
 	const file = ".gitlint"
 	if _, err := os.Stat(file); err == nil {
 		config, err := kingpin.ExpandArgsFromFile(file)
