@@ -37,6 +37,14 @@ func TestCommitID(t *testing.T) {
 		"Commit.ID() must return the commit's hash")
 }
 
+func TestCommitShortID(t *testing.T) {
+	const ID = "c26cf8af130955c5c67cfea96f9532680b963628"
+	assert.Equal(t,
+		(&Commit{Hash: ID}).ShortID(),
+		ID[:7],
+		"Commit.ShortID() must equal the first 7 characters of the commit's hash")
+}
+
 func TestCommitSubject(t *testing.T) {
 	const subject = "test subject"
 	assert.Equal(t,

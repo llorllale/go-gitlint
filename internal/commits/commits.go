@@ -41,6 +41,11 @@ func (c *Commit) ID() string {
 	return c.Hash
 }
 
+// ShortID returns the commit hash's short form.
+func (c *Commit) ShortID() string {
+	return c.Hash[:7]
+}
+
 // Subject is the commit message's subject line.
 func (c *Commit) Subject() string {
 	return strings.Split(c.Message, "\n\n")[0]
