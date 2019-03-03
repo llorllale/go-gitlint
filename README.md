@@ -10,20 +10,43 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://raw.githubusercontent.com/llorllale/go-gitlint/master/LICENSE)
 
 # go-gitlint
-Go lint your commit messages!
+Lint your git!
 
-## Requirements
+## Usage
+```
+llorllale:~/dev/go-gitlint$ ./gitlint --help
+usage: gitlint [<flags>]
 
-As an architect of other (not necessarily golang) projects hosted on GitHub I need:
+Flags:
+  --help                         Show context-sensitive help (also try --help-long and --help-man).
+  --subject-regex=SUBJECT-REGEX  Filters commit subjects based on a regular expression.
+  --subject-len=SUBJECT-LEN      Filters commit subjects based on length.
+  --body-regex=BODY-REGEX        Filters commit message bodies based on a regular expression.
+  --path="."                     Path to the git repo ("." by default).
+```
+Additionally, it will look for configurations in a file `.gitlint` in the current directory if it exists. This file's format is just the same command line flags but each on a separate line. *Flags passed through the command line take precedence.*
 
-* Commit titles and bodies merged to the development branch conform to an arbitrary regex
-* Commit titles to include the relevant issue's ID
-* Lint commit msgs on varios development platforms (Windows, Linux, Mac)
-* (BONUS) Pre-commit hook to validate my commit's msg
-* (BONUS) Performance (because a slow pre-commit hook would render the git workflow unmanageable)
+## Integrate to your CI
+
+Use the [`download-gitlint.sh`](https://raw.githubusercontent.com/llorllale/go-gitlint/master/download-gitlint.sh) script:
+
+`curl -sfL https://raw.githubusercontent.com/llorllale/go-gitlint/master/download-gitlint.sh | sh -s 1.0.0`
+
+Specifying the version is optional; if you just want the latest, omit the `-s <version>` part.
+
+In both cases the correct version for your platform will be downloaded and installed at `$GOPATH/bin`.
+
+## Motivation
+
+- [X] Validate format of commit message subject and body
+- [X] Lint commit msgs on varios development platforms (Windows, Linux, Mac)
+- [X] Configuration from file with cli args taking precedence
+- [ ] [`commit-msg`](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) hook to validate my commit's msg
+- [X] Performance (because a slow pre-commit hook would render the git workflow unmanageable)
+- [X] My first Go project :)
 
 ## Contributing
-Just open a PR, make sure `make checks` works.
+Fork this repo, make sure `make checks` works, **and then** open a PR.
 
 ## Build dependencies
 To run `make checks` you will need:
