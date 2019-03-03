@@ -26,6 +26,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/llorllale/go-gitlint/internal/repo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
@@ -73,6 +74,28 @@ func TestIn(t *testing.T) {
 		assert.Equal(t, msg, commit.Subject()+"\n\n"+commit.Body(),
 			"commits.In() returned commits with incorrect message subjects or bodies")
 	}
+}
+
+func TestSince(t *testing.T) {
+	before, err := time.Parse("2006-01-02", "2017-10-25")
+	require.NoError(t, err)
+	since, err := time.Parse("2006-01-02", "2019-01-01")
+	require.NoError(t, err)
+	after, err := time.Parse("2006-01-02", "2019-03-03")
+	require.NoError(t, err)
+	commits := Since(
+		"2019-01-01",
+		func() []*Commit {
+			return []*Commit{
+				{Date: before},
+				{Date: since},
+				{Date: after},
+			}
+		},
+	)()
+	assert.Len(t, commits, 2)
+	assert.Contains(t, commits, &Commit{Date: since})
+	assert.Contains(t, commits, &Commit{Date: after})
 }
 
 // A git repo initialized and with one commit per each of the messages provided.

@@ -14,7 +14,7 @@ Lint your git!
 
 ## Usage
 ```
-llorllale:~/dev/go-gitlint$ ./gitlint --help
+$ ./gitlint --help
 usage: gitlint [<flags>]
 
 Flags:
@@ -23,6 +23,7 @@ Flags:
   --subject-len=SUBJECT-LEN      Filters commit subjects based on length.
   --body-regex=BODY-REGEX        Filters commit message bodies based on a regular expression.
   --path="."                     Path to the git repo ("." by default).
+  --since="1970-01-01"           A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")
 ```
 Additionally, it will look for configurations in a file `.gitlint` in the current directory if it exists. This file's format is just the same command line flags but each on a separate line. *Flags passed through the command line take precedence.*
 
