@@ -23,12 +23,8 @@ Flags:
   --subject-regex=".*"      Commit subject line must conform to this regular expression (default: ".*").
   --subject-len=2147483646  Commit subject line cannot exceed this length (default: math.MaxInt32 - 1).
   --body-regex=".*"         Commit message body must conform to this regular expression (default: ".*").
-<<<<<<< HEAD
   --since="1970-01-01"      A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").
   --msg-file=""             Only analyze the commit message found in this file (default: "").
-=======
-  --since="1970-01-01"      A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")
->>>>>>> e7a4e5531f24e283a00326e318b3de0eaf0242f2
 ```
 Additionally, it will look for configurations in a file `.gitlint` in the current directory if it exists. This file's format is just the same command line flags but each on a separate line. *Flags passed through the command line take precedence.*
 
