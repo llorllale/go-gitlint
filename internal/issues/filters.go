@@ -19,38 +19,12 @@ import (
 	"regexp"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
-)
-
-var (
-	subjectRegex  = kingpin.Flag("subject-regex", "Filters commit subjects based on a regular expression.").String()    //nolint[gochecknoglobals]
-	subjectLength = kingpin.Flag("subject-len", "Filters commit subjects based on length.").Int()                       //nolint[gochecknoglobals]
-	bodyRegex     = kingpin.Flag("body-regex", "Filters commit message bodies based on a regular expression.").String() //nolint[gochecknoglobals]
 )
 
 // Filter identifies an issue with a commit.
 // A filter returning a zero-valued Issue signals that it found no issue
 // with the commit.
 type Filter func(*commits.Commit) Issue
-
-// Filters returns all filters configured by the user.
-// @todo #31 Function issues.Filters() can be removed by providing
-//  default values for each filter that will effectively render them
-//  disabled. For example, OfSubjectRegex() can be effectively disabled
-//  by using ".*" as regex.
-func Filters() []Filter {
-	filters := make([]Filter, 0)
-	if subjectRegex != nil {
-		filters = append(filters, OfSubjectRegex(*subjectRegex))
-	}
-	if bodyRegex != nil {
-		filters = append(filters, OfBodyRegex(*bodyRegex))
-	}
-	if subjectLength != nil && *subjectLength > 0 {
-		filters = append(filters, OfSubjectLength(*subjectLength))
-	}
-	return filters
-}
 
 // OfSubjectRegex tests a commit's subject with the regex.
 func OfSubjectRegex(regex string) Filter {
