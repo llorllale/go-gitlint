@@ -15,6 +15,8 @@
 package commits
 
 import (
+	"io"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -108,5 +110,21 @@ func Since(t string, cmts Commits) Commits {
 			}
 		}
 		return filtered
+	}
+}
+
+// MsgIn returns a single fake commit with the message read from this reader.
+// This fake commit will have a fake hash and its timestamp will be time.Now().
+func MsgIn(reader io.Reader) Commits {
+	return func() []*Commit {
+		b, err := ioutil.ReadAll(reader)
+		if err != nil {
+			panic(err)
+		}
+		return []*Commit{{
+			Hash:    "fakehsh",
+			Message: string(b),
+			Date:    time.Now(),
+		}}
 	}
 }

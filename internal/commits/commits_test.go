@@ -98,6 +98,14 @@ func TestSince(t *testing.T) {
 	assert.Contains(t, commits, &Commit{Date: after})
 }
 
+func TestMsgIn(t *testing.T) {
+	const message = "test subject\n\ntest body"
+	commits := MsgIn(strings.NewReader(message))()
+	assert.Len(t, commits, 1)
+	assert.Equal(t, "test subject", commits[0].Subject())
+	assert.Equal(t, "test body", commits[0].Body())
+}
+
 // A git repo initialized and with one commit per each of the messages provided.
 // This repo is created in a temporary directory; use the cleanup function
 // to delete it afterwards.
