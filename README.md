@@ -21,7 +21,7 @@ Flags:
   --help                    Show context-sensitive help (also try --help-long and --help-man).
   --path="."                Path to the git repo (default: ".").
   --subject-regex=".*"      Commit subject line must conform to this regular expression (default: ".*").
-  --subject-len=4294967295  Commit subject line cannot exceed this length (default: math.MaxUint32).
+  --subject-len=2147483646  Commit subject line cannot exceed this length (default: math.MaxInt32 - 1).
   --body-regex=".*"         Commit message body must conform to this regular expression (default: ".*").
   --since="1970-01-01"      A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")
 ```

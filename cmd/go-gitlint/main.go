@@ -32,7 +32,7 @@ import (
 var (
 	path          = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                         //nolint[gochecknoglobals]
 	subjectRegex  = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                       //nolint[gochecknoglobals]
-	subjectLength = kingpin.Flag("subject-len", "Commit subject line cannot exceed this length (default: math.MaxUint32).").Default(strconv.Itoa(math.MaxUint32)).Int()        //nolint[gochecknoglobals]
+	subjectLength = kingpin.Flag("subject-len", "Commit subject line cannot exceed this length (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()  //nolint[gochecknoglobals]
 	bodyRegex     = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                          //nolint[gochecknoglobals]
 	since         = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")`).Default("1970-01-01").String() //nolint[gochecknoglobals]
 )
