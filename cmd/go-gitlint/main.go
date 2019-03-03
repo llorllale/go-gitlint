@@ -27,7 +27,10 @@ import (
 //  They promote coupling across different components inside the same package.
 //  Figure out a way to remove these global variables. Whatever command line
 //  parser we choose should be able to auto-generate usage.
-var path = kingpin.Flag("path", `Path to the git repo ("." by default).`).Default(".").String() //nolint[gochecknoglobals]
+var (
+	path  = kingpin.Flag("path", `Path to the git repo ("." by default).`).Default(".").String()                                                                       //nolint[gochecknoglobals]
+	since = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")`).Default("1970-01-01").String() //nolint[gochecknoglobals]
+)
 
 func main() {
 	configure()
@@ -37,8 +40,11 @@ func main() {
 				os.Stdout, "\n",
 				issues.Collected(
 					issues.Filters(),
-					commits.In(
-						repo.Filesystem(*path),
+					commits.Since(
+						*since,
+						commits.In(
+							repo.Filesystem(*path),
+						),
 					),
 				),
 			)(),

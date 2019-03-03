@@ -34,6 +34,10 @@ var (
 type Filter func(*commits.Commit) Issue
 
 // Filters returns all filters configured by the user.
+// @todo #31 Function issues.Filters() can be removed by providing
+//  default values for each filter that will effectively render them
+//  disabled. For example, OfSubjectRegex() can be effectively disabled
+//  by using ".*" as regex.
 func Filters() []Filter {
 	filters := make([]Filter, 0)
 	if subjectRegex != nil {

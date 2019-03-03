@@ -16,6 +16,7 @@ package commits
 
 import (
 	"strings"
+	"time"
 
 	"github.com/llorllale/go-gitlint/internal/repo"
 	git "gopkg.in/src-d/go-git.v4"
@@ -34,6 +35,7 @@ type Commits func() []*Commit
 type Commit struct {
 	Hash    string
 	Message string
+	Date    time.Time
 }
 
 // ID is the commit's hash.
@@ -83,10 +85,28 @@ func In(repository repo.Repo) Commits {
 				&Commit{
 					Hash:    c.Hash.String(),
 					Message: c.Message,
+					Date:    c.Author.When,
 				},
 			)
 			return nil
 		})
 		return commits
+	}
+}
+
+// Since returns commits authored since time t (format: yyyy-MM-dd).
+func Since(t string, cmts Commits) Commits {
+	return func() []*Commit {
+		start, err := time.Parse("2006-01-02", t)
+		if err != nil {
+			panic(err)
+		}
+		filtered := make([]*Commit, 0)
+		for _, c := range cmts() {
+			if !c.Date.Before(start) {
+				filtered = append(filtered, c)
+			}
+		}
+		return filtered
 	}
 }
