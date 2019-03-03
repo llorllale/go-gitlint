@@ -15,7 +15,9 @@
 package main
 
 import (
+	"math"
 	"os"
+	"strconv"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
 	"github.com/llorllale/go-gitlint/internal/issues"
@@ -28,8 +30,11 @@ import (
 //  Figure out a way to remove these global variables. Whatever command line
 //  parser we choose should be able to auto-generate usage.
 var (
-	path  = kingpin.Flag("path", `Path to the git repo ("." by default).`).Default(".").String()                                                                       //nolint[gochecknoglobals]
-	since = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")`).Default("1970-01-01").String() //nolint[gochecknoglobals]
+	path          = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                         //nolint[gochecknoglobals]
+	subjectRegex  = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                       //nolint[gochecknoglobals]
+	subjectLength = kingpin.Flag("subject-len", "Commit subject line cannot exceed this length (default: math.MaxUint32).").Default(strconv.Itoa(math.MaxUint32)).Int()        //nolint[gochecknoglobals]
+	bodyRegex     = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                          //nolint[gochecknoglobals]
+	since         = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01")`).Default("1970-01-01").String() //nolint[gochecknoglobals]
 )
 
 func main() {
@@ -39,7 +44,11 @@ func main() {
 			issues.Printed(
 				os.Stdout, "\n",
 				issues.Collected(
-					issues.Filters(),
+					[]issues.Filter{
+						issues.OfSubjectRegex(*subjectRegex),
+						issues.OfBodyRegex(*bodyRegex),
+						issues.OfSubjectLength(*subjectLength),
+					},
 					commits.Since(
 						*since,
 						commits.In(
