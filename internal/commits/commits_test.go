@@ -51,7 +51,7 @@ func TestCommitSubject(t *testing.T) {
 	assert.Equal(t,
 		(&Commit{Message: subject + "\n\ntest body"}).Subject(),
 		subject,
-		`Commit.Subject() must return the substring before the first \n\n`)
+		`Commit.Subject() must return the substring before the first \n`)
 }
 
 func TestCommitBody(t *testing.T) {
@@ -104,6 +104,19 @@ func TestMsgIn(t *testing.T) {
 	assert.Len(t, commits, 1)
 	assert.Equal(t, "test subject", commits[0].Subject())
 	assert.Equal(t, "test body", commits[0].Body())
+}
+
+func TestWithMaxParents(t *testing.T) {
+	const max = 1
+	commits := WithMaxParents(max, func() []*Commit {
+		return []*Commit{
+			{NumParents: max},
+			{NumParents: 2},
+			{NumParents: 3},
+		}
+	})()
+	assert.Len(t, commits, 1)
+	assert.Equal(t, commits[0].NumParents, max)
 }
 
 // A git repo initialized and with one commit per each of the messages provided.
