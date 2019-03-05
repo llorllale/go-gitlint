@@ -30,12 +30,13 @@ import (
 //  Figure out a way to remove these global variables. Whatever command line
 //  parser we choose should be able to auto-generate usage.
 var (
-	path          = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                          //nolint[gochecknoglobals]
-	subjectRegex  = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                        //nolint[gochecknoglobals]
-	subjectLength = kingpin.Flag("subject-len", "Commit subject line cannot exceed this length (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()   //nolint[gochecknoglobals]
-	bodyRegex     = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                           //nolint[gochecknoglobals]
-	since         = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String() //nolint[gochecknoglobals]
-	msgFile       = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                          //nolint[gochecknoglobals]
+	path          = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                  //nolint[gochecknoglobals]
+	subjectRegex  = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                //nolint[gochecknoglobals]
+	subjectLength = kingpin.Flag("subject-len", "Commit subject line cannot exceed this length (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()           //nolint[gochecknoglobals]
+	bodyRegex     = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                   //nolint[gochecknoglobals]
+	since         = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()         //nolint[gochecknoglobals]
+	msgFile       = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                  //nolint[gochecknoglobals]
+	maxParents    = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int() //nolint[gochecknoglobals]
 )
 
 func main() {
@@ -60,10 +61,13 @@ func main() {
 							return commits.MsgIn(file)
 						},
 						func() commits.Commits {
-							return commits.Since(
-								*since,
-								commits.In(
-									repo.Filesystem(*path),
+							return commits.WithMaxParents(
+								*maxParents,
+								commits.Since(
+									*since,
+									commits.In(
+										repo.Filesystem(*path),
+									),
 								),
 							)
 						},

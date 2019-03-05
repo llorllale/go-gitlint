@@ -35,9 +35,10 @@ type Commits func() []*Commit
 
 // Commit holds data for a single git commit.
 type Commit struct {
-	Hash    string
-	Message string
-	Date    time.Time
+	Hash       string
+	Message    string
+	Date       time.Time
+	NumParents int
 }
 
 // ID is the commit's hash.
@@ -52,7 +53,7 @@ func (c *Commit) ShortID() string {
 
 // Subject is the commit message's subject line.
 func (c *Commit) Subject() string {
-	return strings.Split(c.Message, "\n\n")[0]
+	return strings.Split(c.Message, "\n")[0]
 }
 
 // Body is the commit message's body.
@@ -85,9 +86,10 @@ func In(repository repo.Repo) Commits {
 			commits = append(
 				commits,
 				&Commit{
-					Hash:    c.Hash.String(),
-					Message: c.Message,
-					Date:    c.Author.When,
+					Hash:       c.Hash.String(),
+					Message:    c.Message,
+					Date:       c.Author.When,
+					NumParents: len(c.ParentHashes),
 				},
 			)
 			return nil
@@ -106,6 +108,20 @@ func Since(t string, cmts Commits) Commits {
 		filtered := make([]*Commit, 0)
 		for _, c := range cmts() {
 			if !c.Date.Before(start) {
+				filtered = append(filtered, c)
+			}
+		}
+		return filtered
+	}
+}
+
+// WithMaxParents returns commits that have at most n number of parents.
+// Useful for excluding merge commits.
+func WithMaxParents(n int, cmts Commits) Commits {
+	return func() []*Commit {
+		filtered := make([]*Commit, 0)
+		for _, c := range cmts() {
+			if c.NumParents <= n {
 				filtered = append(filtered, c)
 			}
 		}
