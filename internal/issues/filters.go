@@ -62,13 +62,28 @@ func OfBodyRegex(regex string) Filter {
 	}
 }
 
-// OfSubjectLength tests a commit subject's length.
-func OfSubjectLength(length int) Filter {
+// OfSubjectMaxLength checks that a commit's subject does not exceed this length.
+func OfSubjectMaxLength(length int) Filter {
 	return func(c *commits.Commit) Issue {
 		var issue Issue
 		if len(c.Subject()) > length {
 			issue = Issue{
-				Desc:   fmt.Sprintf("subject exceeds length [%d]", length),
+				Desc:   fmt.Sprintf("subject length exceeds max [%d]", length),
+				Commit: *c,
+			}
+		}
+		return issue
+	}
+}
+
+// OfSubjectMinLength checks that a commit's subject's length is at least
+// of length min.
+func OfSubjectMinLength(min int) Filter {
+	return func(c *commits.Commit) Issue {
+		var issue Issue
+		if len(c.Subject()) < min {
+			issue = Issue{
+				Desc:   fmt.Sprintf("subject length less than min [%d]", min),
 				Commit: *c,
 			}
 		}
