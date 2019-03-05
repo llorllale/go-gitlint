@@ -22,6 +22,7 @@ Flags:
   --path="."                   Path to the git repo (default: ".").
   --subject-regex=".*"         Commit subject line must conform to this regular expression (default: ".*").
   --subject-maxlen=2147483646  Max length for commit subject line (default: math.MaxInt32 - 1).
+  --subject-minlen=0           Min length for commit subject line (default: 0).
   --body-regex=".*"            Commit message body must conform to this regular expression (default: ".*").
   --since="1970-01-01"         A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").
   --msg-file=""                Only analyze the commit message found in this file (default: "").

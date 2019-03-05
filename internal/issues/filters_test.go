@@ -65,24 +65,46 @@ func TestOfBodyRegexNonMatch(t *testing.T) {
 	)
 }
 
-func TestOfSubjectLengthMatch(t *testing.T) {
+func TestOfSubjectMaxLengthMatch(t *testing.T) {
 	assert.NotZero(t,
-		OfSubjectLength(5)(
+		OfSubjectMaxLength(5)(
 			&commits.Commit{
 				Message: "very very very VERY long subject\n\nand body",
 			},
 		),
-		"filter.OfSubjectLength() must match if the commit's subject is too long",
+		"filter.OfSubjectMaxLength() must match if the commit's subject is too long",
 	)
 }
 
-func TestOfSubjectLengthNonMatch(t *testing.T) {
+func TestOfSubjectMaxLengthNonMatch(t *testing.T) {
 	assert.Zero(t,
-		OfSubjectLength(10)(
+		OfSubjectMaxLength(10)(
 			&commits.Commit{
 				Message: "short\n\nmessage",
 			},
 		),
-		"filter.OfSubjectLength() must not match if the commit's subject is not too long",
+		"filter.OfSubjectMaxLength() must not match if the commit's subject is not too long",
+	)
+}
+
+func TestOfSubjectMinLengthMatch(t *testing.T) {
+	assert.NotZero(t,
+		OfSubjectMinLength(10)(
+			&commits.Commit{
+				Message: "short\n\nand body",
+			},
+		),
+		"filter.OfSubjectMinLength() must match if the commit's subject is too short",
+	)
+}
+
+func TestOfSubjectMinLengthNonMatch(t *testing.T) {
+	assert.Zero(t,
+		OfSubjectMinLength(10)(
+			&commits.Commit{
+				Message: "not too short subject\n\nmessage",
+			},
+		),
+		"filter.OfSubjectMinLength() must not match if the commit's subject is not too short",
 	)
 }

@@ -33,6 +33,7 @@ var (
 	path             = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                  //nolint[gochecknoglobals]
 	subjectRegex     = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                //nolint[gochecknoglobals]
 	subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                   //nolint[gochecknoglobals]
+	subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                               //nolint[gochecknoglobals]
 	bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                   //nolint[gochecknoglobals]
 	since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()         //nolint[gochecknoglobals]
 	msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                  //nolint[gochecknoglobals]
@@ -49,7 +50,8 @@ func main() {
 					[]issues.Filter{
 						issues.OfSubjectRegex(*subjectRegex),
 						issues.OfBodyRegex(*bodyRegex),
-						issues.OfSubjectLength(*subjectMaxLength),
+						issues.OfSubjectMaxLength(*subjectMaxLength),
+						issues.OfSubjectMinLength(*subjectMinLength),
 					},
 					try(
 						len(*msgFile) > 0,
