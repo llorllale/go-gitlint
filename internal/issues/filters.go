@@ -90,3 +90,18 @@ func OfSubjectMinLength(min int) Filter {
 		return issue
 	}
 }
+
+// OfBodyMaxLength checks that a commit's body's length doesn't exceed this
+// max number of characters.
+func OfBodyMaxLength(max int) Filter {
+	return func(c *commits.Commit) Issue {
+		var issue Issue
+		if len(c.Body()) > max {
+			issue = Issue{
+				Desc:   fmt.Sprintf("body length exceeds max [%d]", max),
+				Commit: *c,
+			}
+		}
+		return issue
+	}
+}
