@@ -15,6 +15,7 @@
 package issues
 
 import (
+	"math"
 	"testing"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
@@ -106,5 +107,25 @@ func TestOfSubjectMinLengthNonMatch(t *testing.T) {
 			},
 		),
 		"filter.OfSubjectMinLength() must not match if the commit's subject is not too short",
+	)
+}
+
+func TestOfBodyMaxLengthMatch(t *testing.T) {
+	assert.NotZero(t,
+		OfBodyMaxLength(1)(
+			&commits.Commit{
+				Message: "subject\n\nclearly, this commit has a long body",
+			},
+		),
+	)
+}
+
+func TestOfBodyMaxLengthNonMatch(t *testing.T) {
+	assert.Zero(t,
+		OfBodyMaxLength(math.MaxInt32)(
+			&commits.Commit{
+				Message: "subject\n\nclearly, this commit cannot exceed this max",
+			},
+		),
 	)
 }

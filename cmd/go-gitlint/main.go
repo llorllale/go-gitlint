@@ -35,6 +35,7 @@ var (
 	subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                   //nolint[gochecknoglobals]
 	subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                               //nolint[gochecknoglobals]
 	bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                   //nolint[gochecknoglobals]
+	bodyMaxLength    = kingpin.Flag("body-maxlen", `Max length for commit body (default: math.MaxInt32 - 1)`).Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                               //nolint[gochecknoglobals]
 	since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()         //nolint[gochecknoglobals]
 	msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                  //nolint[gochecknoglobals]
 	maxParents       = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int() //nolint[gochecknoglobals]
@@ -49,9 +50,10 @@ func main() {
 				issues.Collected(
 					[]issues.Filter{
 						issues.OfSubjectRegex(*subjectRegex),
-						issues.OfBodyRegex(*bodyRegex),
 						issues.OfSubjectMaxLength(*subjectMaxLength),
 						issues.OfSubjectMinLength(*subjectMinLength),
+						issues.OfBodyRegex(*bodyRegex),
+						issues.OfBodyMaxLength(*bodyMaxLength),
 					},
 					try(
 						len(*msgFile) > 0,
