@@ -18,6 +18,7 @@ import (
 	"math"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/llorllale/go-gitlint/internal/commits"
 	"github.com/llorllale/go-gitlint/internal/issues"
@@ -92,9 +93,31 @@ func configure() {
 		}
 		args = append(args, config...)
 	}
-	if _, err := kingpin.CommandLine.Parse(args); err != nil {
+	if _, err := kingpin.CommandLine.Parse(unique(args)); err != nil {
 		panic(err)
 	}
+}
+
+func unique(args []string) []string {
+	u := make([]string, 0)
+	flags := make([]string, 0)
+	for _, a := range args {
+		name := strings.Split(a, "=")[0]
+		if !contains(name, flags) {
+			u = append(u, a)
+			flags = append(flags, name)
+		}
+	}
+	return u
+}
+
+func contains(s string, strs []string) bool {
+	for _, str := range strs {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }
 
 func try(cond bool, actual, dflt func() commits.Commits) commits.Commits {
