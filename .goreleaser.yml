@@ -26,10 +26,8 @@ builds:
       - amd64
 archive:
   replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
+    darwin: osx
+    386: x86_32
     amd64: x86_64
 release:
   name_template: "{{.Tag}}"
