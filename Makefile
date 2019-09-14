@@ -35,13 +35,13 @@ coverage:
 	./check_coverage.sh
 
 lint:
-	./bin/golangci-lint run
+	golangci-lint run
 
 pdd:
 	pdd --file=puzzles.xml
 
 license:
-	${GOPATH}/bin/weasel
+	weasel
 
 checks: build lint pdd license test coverage
 

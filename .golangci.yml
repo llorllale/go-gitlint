@@ -1,6 +1,9 @@
 service:
   # project-path: github.com/llorllale/go-gitlint
-  golangci-lint-version: 1.14.x
+  # @todo #53 upgrade golangci-lint-version to 1.18.x once their docker image is ready
+  #  - see https://github.com/golangci/golangci-lint/issues/682. For now, linting on
+  #  local is against 1.18.x vs their service on 1.17.x.
+  golangci-lint-version: 1.17.x
   # prepare:
   #  - make deps
   #  - make generate

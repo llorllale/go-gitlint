@@ -82,9 +82,9 @@ Fork this repo, make sure `make checks` works, **and then** open a PR.
 ## Build dependencies
 To run `make checks` you will need:
 
-* Go `1.11.x`
+* Go `1.13.x`
 * Ruby 2.x (for `pdd`)
 * [pdd](https://github.com/yegor256/pdd) (a ruby gem - `gem install pdd`)
-* [golangci-lint](https://github.com/golangci/golangci-lint) v1.14.0 (expected to be in the `./bin` folder)
-* [weasel](https://github.com/comcast/weasel) (`go get github.com/comcast/weasel`)
+* [golangci-lint](https://github.com/golangci/golangci-lint) v1.18.0 in your `$PATH` (`curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.18.0`)
+* [weasel](https://github.com/comcast/weasel) in your `$PATH` (`go get github.com/comcast/weasel`)
 
