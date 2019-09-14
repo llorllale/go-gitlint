@@ -119,6 +119,36 @@ func TestWithMaxParents(t *testing.T) {
 	assert.Equal(t, commits[0].NumParents, max)
 }
 
+func TestNotAuthoredByNames(t *testing.T) { //nolint:dupl
+	filtered := &Commit{Author: &Author{Name: uuid.New().String()}}
+	expected := []*Commit{
+		{Author: &Author{Name: uuid.New().String()}},
+		{Author: &Author{Name: uuid.New().String()}},
+		{Author: &Author{Name: uuid.New().String()}},
+		{Author: &Author{Name: uuid.New().String()}},
+	}
+	actual := NotAuthoredByNames(
+		[]string{filtered.Author.Name},
+		func() []*Commit { return append(expected, filtered) },
+	)()
+	assert.Equal(t, expected, actual)
+}
+
+func TestNotAuthoredByEmails(t *testing.T) { //nolint:dupl
+	filtered := &Commit{Author: &Author{Email: uuid.New().String()}}
+	expected := []*Commit{
+		{Author: &Author{Email: uuid.New().String()}},
+		{Author: &Author{Email: uuid.New().String()}},
+		{Author: &Author{Email: uuid.New().String()}},
+		{Author: &Author{Email: uuid.New().String()}},
+	}
+	actual := NotAuthoredByEmails(
+		[]string{filtered.Author.Email},
+		func() []*Commit { return append(expected, filtered) },
+	)()
+	assert.Equal(t, expected, actual)
+}
+
 // A git repo initialized and with one commit per each of the messages provided.
 // This repo is created in a temporary directory; use the cleanup function
 // to delete it afterwards.

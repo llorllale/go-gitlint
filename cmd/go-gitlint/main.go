@@ -31,15 +31,17 @@ import (
 //  Figure out a way to remove these global variables. Whatever command line
 //  parser we choose should be able to auto-generate usage.
 var (
-	path             = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                  //nolint[gochecknoglobals]
-	subjectRegex     = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                //nolint[gochecknoglobals]
-	subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                   //nolint[gochecknoglobals]
-	subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                               //nolint[gochecknoglobals]
-	bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                   //nolint[gochecknoglobals]
-	bodyMaxLength    = kingpin.Flag("body-maxlen", `Max length for commit body (default: math.MaxInt32 - 1)`).Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                               //nolint[gochecknoglobals]
-	since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()         //nolint[gochecknoglobals]
-	msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                  //nolint[gochecknoglobals]
-	maxParents       = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int() //nolint[gochecknoglobals]
+	path             = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                         //nolint[gochecknoglobals]
+	subjectRegex     = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                       //nolint[gochecknoglobals]
+	subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                          //nolint[gochecknoglobals]
+	subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                                      //nolint[gochecknoglobals]
+	bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                          //nolint[gochecknoglobals]
+	bodyMaxLength    = kingpin.Flag("body-maxlen", `Max length for commit body (default: math.MaxInt32 - 1)`).Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                                      //nolint[gochecknoglobals]
+	since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()                //nolint[gochecknoglobals]
+	msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                         //nolint[gochecknoglobals]
+	maxParents       = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int()        //nolint[gochecknoglobals]
+	authorNames      = kingpin.Flag("excl-author-names", "Don't lint commits with authors whose names match these comma-separated regular expressions (default: '$a').").Default("$a").String()   //nolint[gochecknoglobals]
+	authorEmails     = kingpin.Flag("excl-author-emails", "Don't lint commits with authors whose emails match these comma-separated regular expressions (default: '$a').").Default("$a").String() //nolint[gochecknoglobals]
 )
 
 func main() {
@@ -66,12 +68,18 @@ func main() {
 							return commits.MsgIn(file)
 						},
 						func() commits.Commits {
-							return commits.WithMaxParents(
-								*maxParents,
-								commits.Since(
-									*since,
-									commits.In(
-										repo.Filesystem(*path),
+							return commits.NotAuthoredByNames(
+								strings.Split(*authorNames, ","),
+								commits.NotAuthoredByEmails(
+									strings.Split(*authorEmails, ","),
+									commits.WithMaxParents(
+										*maxParents,
+										commits.Since(
+											*since,
+											commits.In(
+												repo.Filesystem(*path),
+											),
+										),
 									),
 								),
 							)

@@ -17,6 +17,7 @@ package commits
 import (
 	"io"
 	"io/ioutil"
+	"regexp"
 	"strings"
 	"time"
 
@@ -39,6 +40,13 @@ type Commit struct {
 	Message    string
 	Date       time.Time
 	NumParents int
+	Author     *Author
+}
+
+// Author is the author of a commit.
+type Author struct {
+	Name  string
+	Email string
 }
 
 // ID is the commit's hash.
@@ -90,6 +98,10 @@ func In(repository repo.Repo) Commits {
 					Message:    c.Message,
 					Date:       c.Author.When,
 					NumParents: len(c.ParentHashes),
+					Author: &Author{
+						Name:  c.Author.Name,
+						Email: c.Author.Email,
+					},
 				},
 			)
 			return nil
@@ -100,33 +112,66 @@ func In(repository repo.Repo) Commits {
 
 // Since returns commits authored since time t (format: yyyy-MM-dd).
 func Since(t string, cmts Commits) Commits {
-	return func() []*Commit {
-		start, err := time.Parse("2006-01-02", t)
-		if err != nil {
-			panic(err)
-		}
-		filtered := make([]*Commit, 0)
-		for _, c := range cmts() {
-			if !c.Date.Before(start) {
-				filtered = append(filtered, c)
+	return filtered(
+		func(c *Commit) bool {
+			start, err := time.Parse("2006-01-02", t)
+			if err != nil {
+				panic(err)
 			}
-		}
-		return filtered
-	}
+			return !c.Date.Before(start)
+		},
+		cmts,
+	)
+}
+
+// NotAuthoredByNames filters out commits with authors whose names match any of the given patterns.
+func NotAuthoredByNames(patterns []string, cmts Commits) Commits {
+	return filtered(
+		func(c *Commit) bool {
+			for _, p := range patterns {
+				match, err := regexp.MatchString(p, c.Author.Name)
+				if err != nil {
+					panic(err)
+				}
+				if match {
+					return false
+				}
+			}
+			return true
+		},
+		cmts,
+	)
+}
+
+// NotAuthoredByEmails filters out commits with authors whose emails match any
+// of the given patterns.
+func NotAuthoredByEmails(patterns []string, cmts Commits) Commits {
+	return filtered(
+		func(c *Commit) bool {
+			for _, p := range patterns {
+				match, err := regexp.MatchString(p, c.Author.Email)
+				if err != nil {
+					panic(err)
+				}
+				if match {
+					return false
+				}
+			}
+			return true
+		},
+		cmts,
+	)
 }
 
 // WithMaxParents returns commits that have at most n number of parents.
 // Useful for excluding merge commits.
 func WithMaxParents(n int, cmts Commits) Commits {
-	return func() []*Commit {
-		filtered := make([]*Commit, 0)
-		for _, c := range cmts() {
-			if c.NumParents <= n {
-				filtered = append(filtered, c)
-			}
-		}
-		return filtered
-	}
+	return filtered(
+		func(c *Commit) bool {
+			return c.NumParents <= n
+		},
+		cmts,
+	)
 }
 
 // MsgIn returns a single fake commit with the message read from this reader.
@@ -142,5 +187,17 @@ func MsgIn(reader io.Reader) Commits {
 			Message: string(b),
 			Date:    time.Now(),
 		}}
+	}
+}
+
+func filtered(filter func(*Commit) bool, in Commits) (out Commits) {
+	return func() []*Commit {
+		f := make([]*Commit, 0)
+		for _, c := range in() {
+			if filter(c) {
+				f = append(f, c)
+			}
+		}
+		return f
 	}
 }
