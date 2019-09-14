@@ -28,6 +28,8 @@ Flags:
   --since="1970-01-01"         A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").
   --msg-file=""                Only analyze the commit message found in this file (default: "").
   --max-parents=1              Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.
+  --excl-author-names="$a"     Don't lint commits with authors whose names match these comma-separated regular expressions (default: '$a').
+  --excl-author-emails="$a"    Don't lint commits with authors whose emails match these comma-separated regular expressions (default: '$a').
 ```
 Additionally, it will look for configurations in a file `.gitlint` in the current directory if it exists. This file's format is just the same command line flags but each on a separate line. *Flags passed through the command line take precedence.*
 

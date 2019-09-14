@@ -12,4 +12,5 @@ go\.sum, Ignore
 \.pdd, Ignore
 \.travis\.yml, Ignore
 \.idea, Ignore
+\.vscode, Ignore
 download-gitlint.sh, Ignore
