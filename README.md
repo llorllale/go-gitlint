@@ -33,6 +33,10 @@ Flags:
 ```
 Additionally, it will look for configurations in a file `.gitlint` in the current directory if it exists. This file's format is just the same command line flags but each on a separate line. *Flags passed through the command line take precedence.*
 
+### Integration
+
+To integrate it as GitHub action into CI pipeline use [gitlint-action](https://github.com/g4s8/gitlint-action)
+
 ### Lint your commit msg when committing
 
 Add a `commit-msg` hook to your Git repo:
