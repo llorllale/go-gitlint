@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package repo is the API for fetching repos.
 package repo
 
 import (
@@ -29,6 +30,7 @@ func Filesystem(directory string) Repo {
 		if err != nil {
 			panic(err)
 		}
+
 		return repo
 	}
 }

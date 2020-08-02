@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package issues provides filters for problems found in commit messages.
 package issues
 
 import (
@@ -34,6 +35,7 @@ type Issues func() []Issue
 func Collected(filters []Filter, cmts commits.Commits) Issues {
 	return func() []Issue {
 		issues := make([]Issue, 0)
+
 		for _, c := range cmts() {
 			for _, f := range filters {
 				if issue := f(c); issue != (Issue{}) {
@@ -41,6 +43,7 @@ func Collected(filters []Filter, cmts commits.Commits) Issues {
 				}
 			}
 		}
+
 		return issues
 	}
 }
@@ -49,17 +52,21 @@ func Collected(filters []Filter, cmts commits.Commits) Issues {
 func Printed(w io.Writer, sep string, issues Issues) Issues {
 	return func() []Issue {
 		iss := issues()
+
 		for idx := range iss {
 			i := iss[idx]
+
 			_, err := color.New(color.Bold).Fprintf(w, "%s: ", i.Commit.ShortID())
 			if err != nil {
 				panic(err)
 			}
+
 			_, err = color.New(color.FgRed).Fprintf(w, "%s%s", i.Desc, sep)
 			if err != nil {
 				panic(err)
 			}
 		}
+
 		return iss
 	}
 }

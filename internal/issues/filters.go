@@ -30,16 +30,19 @@ type Filter func(*commits.Commit) Issue
 func OfSubjectRegex(regex string) Filter {
 	return func(c *commits.Commit) Issue {
 		var issue Issue
+
 		matched, err := regexp.MatchString(regex, c.Subject())
 		if err != nil {
 			panic(err)
 		}
+
 		if !matched {
 			issue = Issue{
 				Desc:   fmt.Sprintf("subject does not match regex [%s]", regex),
 				Commit: *c,
 			}
 		}
+
 		return issue
 	}
 }
@@ -48,16 +51,19 @@ func OfSubjectRegex(regex string) Filter {
 func OfBodyRegex(regex string) Filter {
 	return func(c *commits.Commit) Issue {
 		var issue Issue
+
 		matched, err := regexp.MatchString(regex, c.Body())
 		if err != nil {
 			panic(err)
 		}
+
 		if !matched {
 			issue = Issue{
 				Desc:   fmt.Sprintf("body does not conform to regex [%s]", regex),
 				Commit: *c,
 			}
 		}
+
 		return issue
 	}
 }
@@ -66,12 +72,14 @@ func OfBodyRegex(regex string) Filter {
 func OfSubjectMaxLength(length int) Filter {
 	return func(c *commits.Commit) Issue {
 		var issue Issue
+
 		if len(c.Subject()) > length {
 			issue = Issue{
 				Desc:   fmt.Sprintf("subject length exceeds max [%d]", length),
 				Commit: *c,
 			}
 		}
+
 		return issue
 	}
 }
@@ -81,12 +89,14 @@ func OfSubjectMaxLength(length int) Filter {
 func OfSubjectMinLength(min int) Filter {
 	return func(c *commits.Commit) Issue {
 		var issue Issue
+
 		if len(c.Subject()) < min {
 			issue = Issue{
 				Desc:   fmt.Sprintf("subject length less than min [%d]", min),
 				Commit: *c,
 			}
 		}
+
 		return issue
 	}
 }
@@ -96,12 +106,14 @@ func OfSubjectMinLength(min int) Filter {
 func OfBodyMaxLength(max int) Filter {
 	return func(c *commits.Commit) Issue {
 		var issue Issue
+
 		if len(c.Body()) > max {
 			issue = Issue{
 				Desc:   fmt.Sprintf("body length exceeds max [%d]", max),
 				Commit: *c,
 			}
 		}
+
 		return issue
 	}
 }

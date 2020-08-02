@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package repo
+package repo_test
 
 import (
 	"fmt"
@@ -26,45 +26,60 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+
+	"github.com/llorllale/go-gitlint/internal/repo"
 )
 
 func TestFilesystem(t *testing.T) {
 	msgs := []string{"commit1", "commit2", "commit3"}
-	r, path, cleanup := tmpGitRepo(msgs...)
-	defer cleanup()
-	test := Filesystem(path)()
+	r, path := tmpGitRepo(t, msgs...)
+	test := repo.Filesystem(path)()
+
 	head, err := test.Head()
 	require.NoError(t, err)
+
 	iter, err := r.Log(&git.LogOptions{From: head.Hash()})
 	require.NoError(t, err)
-	_ = iter.ForEach(func(c *object.Commit) error { //nolint[errcheck]
+
+	err = iter.ForEach(func(c *object.Commit) error {
 		assert.Contains(t, msgs, c.Message,
 			"repo.Filesystem() did not return all commits")
+
 		return nil
 	})
+	require.NoError(t, err)
 }
 
-func tmpGitRepo(msgs ...string) (r *git.Repository, folder string, cleanup func()) {
+func tmpGitRepo(t *testing.T, msgs ...string) (r *git.Repository, folder string) {
 	var err error
+
 	folder, err = ioutil.TempDir(
 		"",
-		strings.Replace(uuid.New().String(), "-", "", -1), //nolint[gocritic]
+		strings.ReplaceAll(uuid.New().String(), "-", ""),
 	)
-	panicIf(err)
-	cleanup = func() {
-		panicIf(os.RemoveAll(folder))
-	}
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		require.NoError(t, os.RemoveAll(folder))
+	})
+
 	r, err = git.PlainInit(folder, false)
-	panicIf(err)
+	require.NoError(t, err)
+
 	wt, err := r.Worktree()
-	panicIf(err)
+	require.NoError(t, err)
+
 	for i, msg := range msgs {
 		file := fmt.Sprintf("msg%d.txt", i)
-		panicIf(ioutil.WriteFile(filepath.Join(folder, file), []byte(msg), 0644))
+
+		err = ioutil.WriteFile(filepath.Join(folder, file), []byte(msg), 0600)
+		require.NoError(t, err)
+
 		_, err = wt.Add(file)
-		panicIf(err)
+		require.NoError(t, err)
+
 		_, err = wt.Commit(msg, &git.CommitOptions{
 			Author: &object.Signature{
 				Name:  "John Doe",
@@ -72,14 +87,8 @@ func tmpGitRepo(msgs ...string) (r *git.Repository, folder string, cleanup func(
 				When:  time.Now(),
 			},
 		})
-		panicIf(err)
+		require.NoError(t, err)
 	}
-	return r, folder, cleanup
-}
 
-// panics if err is not nil.
-func panicIf(err error) {
-	if err != nil {
-		panic(err)
-	}
+	return r, folder
 }

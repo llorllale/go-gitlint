@@ -31,17 +31,17 @@ import (
 //  Figure out a way to remove these global variables. Whatever command line
 //  parser we choose should be able to auto-generate usage.
 var (
-	path             = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                         //nolint[gochecknoglobals]
-	subjectRegex     = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                       //nolint[gochecknoglobals]
-	subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                          //nolint[gochecknoglobals]
-	subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                                      //nolint[gochecknoglobals]
-	bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                          //nolint[gochecknoglobals]
-	bodyMaxLength    = kingpin.Flag("body-maxlen", `Max length for commit body (default: math.MaxInt32 - 1)`).Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                                      //nolint[gochecknoglobals]
-	since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()                //nolint[gochecknoglobals]
-	msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                         //nolint[gochecknoglobals]
-	maxParents       = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int()        //nolint[gochecknoglobals]
-	authorNames      = kingpin.Flag("excl-author-names", "Don't lint commits with authors whose names match these comma-separated regular expressions (default: '$a').").Default("$a").String()   //nolint[gochecknoglobals]
-	authorEmails     = kingpin.Flag("excl-author-emails", "Don't lint commits with authors whose emails match these comma-separated regular expressions (default: '$a').").Default("$a").String() //nolint[gochecknoglobals]
+	path             = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                         //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	subjectRegex     = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                       //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                          //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                                      //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                          //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	bodyMaxLength    = kingpin.Flag("body-maxlen", `Max length for commit body (default: math.MaxInt32 - 1)`).Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                                      //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()                //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                         //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	maxParents       = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int()        //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	authorNames      = kingpin.Flag("excl-author-names", "Don't lint commits with authors whose names match these comma-separated regular expressions (default: '$a').").Default("$a").String()   //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+	authorEmails     = kingpin.Flag("excl-author-emails", "Don't lint commits with authors whose emails match these comma-separated regular expressions (default: '$a').").Default("$a").String() //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
 )
 
 func main() {
@@ -92,15 +92,19 @@ func main() {
 }
 
 func configure() {
-	args := os.Args[1:]
 	const file = ".gitlint"
+
+	args := os.Args[1:]
+
 	if _, err := os.Stat(file); err == nil {
 		config, err := kingpin.ExpandArgsFromFile(file)
 		if err != nil {
 			panic(err)
 		}
+
 		args = append(args, config...)
 	}
+
 	if _, err := kingpin.CommandLine.Parse(unique(args)); err != nil {
 		panic(err)
 	}
@@ -109,13 +113,16 @@ func configure() {
 func unique(args []string) []string {
 	u := make([]string, 0)
 	flags := make([]string, 0)
+
 	for _, a := range args {
 		name := strings.Split(a, "=")[0]
+
 		if !contains(name, flags) {
 			u = append(u, a)
 			flags = append(flags, name)
 		}
 	}
+
 	return u
 }
 
@@ -125,6 +132,7 @@ func contains(s string, strs []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -132,5 +140,6 @@ func try(cond bool, actual, dflt func() commits.Commits) commits.Commits {
 	if cond {
 		return actual()
 	}
+
 	return dflt()
 }

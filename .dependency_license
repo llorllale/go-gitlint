@@ -1,10 +1,10 @@
 # weasel config
 
-\.gitignore, Apache
-\.dependency_license, Apache
 README\.md, Docs
 
 # Remove false positives.
+\.gitignore, Ignore
+\.dependency_license, Ignore
 go\.mod, Ignore
 go\.sum, Ignore
 \.golangci\.yml, Ignore
