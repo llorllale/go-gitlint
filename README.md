@@ -34,9 +34,8 @@ Additionally, it will look for configurations in a file `.gitlint` in the curren
 
 ### Integration
 
-To integrate it as GitHub action into CI pipeline use [gitlint-action](https://github.com/g4s8/gitlint-action)
-
-### Lint your commit msg when committing
+#### With Git
+Lint your commit message when committing to your local branch.
 
 Add a `commit-msg` hook to your Git repo:
 
@@ -45,7 +44,10 @@ Add a `commit-msg` hook to your Git repo:
 
 Now your commits will be validated after saving and closing the commit message in your text editor.
 
-### Integrate to your CI
+#### With GitHub Actions
+To integrate it as GitHub action into CI pipeline use [gitlint-action](https://github.com/g4s8/gitlint-action).
+
+#### With any CI pipeline
 
 Use [`download-gitlint.sh`](https://raw.githubusercontent.com/llorllale/go-gitlint/master/download-gitlint.sh):
 
