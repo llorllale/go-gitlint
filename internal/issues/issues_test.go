@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package issues
+package issues_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/llorllale/go-gitlint/internal/commits"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/llorllale/go-gitlint/internal/commits"
+	"github.com/llorllale/go-gitlint/internal/issues"
 )
 
 func TestCollected(t *testing.T) {
@@ -27,16 +29,18 @@ func TestCollected(t *testing.T) {
 		{Hash: "123"},
 		{Hash: "456"},
 	}
-	issues := Collected(
-		[]Filter{
-			func(c *commits.Commit) Issue {
-				var issue Issue
+	isus := issues.Collected(
+		[]issues.Filter{
+			func(c *commits.Commit) issues.Issue {
+				var issue issues.Issue
+
 				if c.Hash == "123" || c.Hash == "456" {
-					issue = Issue{
+					issue = issues.Issue{
 						Desc:   "test",
 						Commit: *c,
 					}
 				}
+
 				return issue
 			},
 		},
@@ -44,11 +48,13 @@ func TestCollected(t *testing.T) {
 			return append(expected, &commits.Commit{Hash: "789"})
 		},
 	)()
+
 	assert.Len(t,
-		issues,
+		isus,
 		2,
 		"issues.Collected() must return the filtered commits")
-	for _, i := range issues {
+
+	for _, i := range isus {
 		assert.Contains(t,
 			expected, &i.Commit,
 			"issues.Collected() must return the filtered commits")
@@ -57,7 +63,8 @@ func TestCollected(t *testing.T) {
 
 func TestPrinted(t *testing.T) {
 	const sep = "-"
-	issues := []Issue{
+
+	isus := []issues.Issue{
 		{
 			Desc: "issueA",
 			Commit: commits.Commit{
@@ -73,17 +80,22 @@ func TestPrinted(t *testing.T) {
 			},
 		},
 	}
+
 	var expected string
-	for _, i := range issues {
+
+	for _, i := range isus {
 		expected += fmt.Sprintf("%s: %s%s", i.Commit.ShortID(), i.Desc, sep)
 	}
+
 	writer := &mockWriter{}
-	Printed(
+
+	issues.Printed(
 		writer, sep,
-		func() []Issue {
-			return issues
+		func() []issues.Issue {
+			return isus
 		},
 	)()
+
 	assert.Equal(t,
 		expected, writer.msg,
 		"issues.Printed() must join Commit.ShortID() and the Issue.Desc with the separator")

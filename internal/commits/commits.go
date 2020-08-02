@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package commits defines the representations of git commit objects.
 package commits
 
 import (
@@ -68,9 +69,11 @@ func (c *Commit) Subject() string {
 func (c *Commit) Body() string {
 	body := ""
 	parts := strings.Split(c.Message, "\n\n")
+
 	if len(parts) > 1 {
 		body = strings.Join(parts[1:], "")
 	}
+
 	return body
 }
 
@@ -81,16 +84,20 @@ func (c *Commit) Body() string {
 func In(repository repo.Repo) Commits {
 	return func() []*Commit {
 		r := repository()
+
 		ref, err := r.Head()
 		if err != nil {
 			panic(err)
 		}
+
 		iter, err := r.Log(&git.LogOptions{From: ref.Hash()})
 		if err != nil {
 			panic(err)
 		}
+
 		commits := make([]*Commit, 0)
-		_ = iter.ForEach(func(c *object.Commit) error { //nolint[errcheck]
+
+		err = iter.ForEach(func(c *object.Commit) error {
 			commits = append(
 				commits,
 				&Commit{
@@ -104,8 +111,13 @@ func In(repository repo.Repo) Commits {
 					},
 				},
 			)
+
 			return nil
 		})
+		if err != nil {
+			panic(err)
+		}
+
 		return commits
 	}
 }
@@ -182,6 +194,7 @@ func MsgIn(reader io.Reader) Commits {
 		if err != nil {
 			panic(err)
 		}
+
 		return []*Commit{{
 			Hash:    "fakehsh",
 			Message: string(b),
@@ -193,11 +206,13 @@ func MsgIn(reader io.Reader) Commits {
 func filtered(filter func(*Commit) bool, in Commits) (out Commits) {
 	return func() []*Commit {
 		f := make([]*Commit, 0)
+
 		for _, c := range in() {
 			if filter(c) {
 				f = append(f, c)
 			}
 		}
+
 		return f
 	}
 }

@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package issues
+package issues_test
 
 import (
 	"math"
 	"testing"
 
-	"github.com/llorllale/go-gitlint/internal/commits"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/llorllale/go-gitlint/internal/commits"
+	"github.com/llorllale/go-gitlint/internal/issues"
 )
 
 func TestOfSubjectRegexMatch(t *testing.T) {
 	assert.Zero(t,
-		OfSubjectRegex(`\(#\d+\) [\w ]{10,50}`)(
+		issues.OfSubjectRegex(`\(#\d+\) [\w ]{10,50}`)(
 			&commits.Commit{
 				Message: "(#123) This is a good subject",
 			},
@@ -35,7 +37,7 @@ func TestOfSubjectRegexMatch(t *testing.T) {
 
 func TestOfSubjectRegexNonMatch(t *testing.T) {
 	assert.NotZero(t,
-		OfSubjectRegex(`\(#\d+\) [\w ]{,50}`)(
+		issues.OfSubjectRegex(`\(#\d+\) [\w ]{,50}`)(
 			&commits.Commit{
 				Message: "I break all the rules!",
 			},
@@ -46,7 +48,7 @@ func TestOfSubjectRegexNonMatch(t *testing.T) {
 
 func TestOfBodyRegexMatch(t *testing.T) {
 	assert.Zero(t,
-		OfBodyRegex(`^.{10,20}$`)(
+		issues.OfBodyRegex(`^.{10,20}$`)(
 			&commits.Commit{
 				Message: "subject\n\nBetween 10 and 20",
 			},
@@ -57,7 +59,7 @@ func TestOfBodyRegexMatch(t *testing.T) {
 
 func TestOfBodyRegexNonMatch(t *testing.T) {
 	assert.NotZero(t,
-		OfBodyRegex(`^.{10,20}$`)(
+		issues.OfBodyRegex(`^.{10,20}$`)(
 			&commits.Commit{
 				Message: "subject\n\nMore than twenty characters!",
 			},
@@ -68,7 +70,7 @@ func TestOfBodyRegexNonMatch(t *testing.T) {
 
 func TestOfSubjectMaxLengthMatch(t *testing.T) {
 	assert.NotZero(t,
-		OfSubjectMaxLength(5)(
+		issues.OfSubjectMaxLength(5)(
 			&commits.Commit{
 				Message: "very very very VERY long subject\n\nand body",
 			},
@@ -79,7 +81,7 @@ func TestOfSubjectMaxLengthMatch(t *testing.T) {
 
 func TestOfSubjectMaxLengthNonMatch(t *testing.T) {
 	assert.Zero(t,
-		OfSubjectMaxLength(10)(
+		issues.OfSubjectMaxLength(10)(
 			&commits.Commit{
 				Message: "short\n\nmessage",
 			},
@@ -90,7 +92,7 @@ func TestOfSubjectMaxLengthNonMatch(t *testing.T) {
 
 func TestOfSubjectMinLengthMatch(t *testing.T) {
 	assert.NotZero(t,
-		OfSubjectMinLength(10)(
+		issues.OfSubjectMinLength(10)(
 			&commits.Commit{
 				Message: "short\n\nand body",
 			},
@@ -101,7 +103,7 @@ func TestOfSubjectMinLengthMatch(t *testing.T) {
 
 func TestOfSubjectMinLengthNonMatch(t *testing.T) {
 	assert.Zero(t,
-		OfSubjectMinLength(10)(
+		issues.OfSubjectMinLength(10)(
 			&commits.Commit{
 				Message: "not too short subject\n\nmessage",
 			},
@@ -112,7 +114,7 @@ func TestOfSubjectMinLengthNonMatch(t *testing.T) {
 
 func TestOfBodyMaxLengthMatch(t *testing.T) {
 	assert.NotZero(t,
-		OfBodyMaxLength(1)(
+		issues.OfBodyMaxLength(1)(
 			&commits.Commit{
 				Message: "subject\n\nclearly, this commit has a long body",
 			},
@@ -122,7 +124,7 @@ func TestOfBodyMaxLengthMatch(t *testing.T) {
 
 func TestOfBodyMaxLengthNonMatch(t *testing.T) {
 	assert.Zero(t,
-		OfBodyMaxLength(math.MaxInt32)(
+		issues.OfBodyMaxLength(math.MaxInt32)(
 			&commits.Commit{
 				Message: "subject\n\nclearly, this commit cannot exceed this max",
 			},
