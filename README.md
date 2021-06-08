@@ -1,5 +1,5 @@
 [![Release](https://img.shields.io/github/release/llorllale/go-gitlint.svg?style=flat-square)](https://github.com/llorllale/go-gitlint/releases/latest)
-[![Build Status](https://travis-ci.org/llorllale/go-gitlint.svg?branch=master)](https://travis-ci.org/llorllale/go-gitlint)
+[![Build Status](https://travis-ci.com/llorllale/go-gitlint.svg?branch=master)](https://travis-ci.com/llorllale/go-gitlint)
 [![codecov](https://codecov.io/gh/llorllale/go-gitlint/branch/master/graph/badge.svg)](https://codecov.io/gh/llorllale/go-gitlint)
 [![Go Report Card](https://goreportcard.com/badge/github.com/llorllale/go-gitlint?style=flat-square)](https://goreportcard.com/report/github.com/llorllale/go-gitlint)
 [![codebeat badge](https://codebeat.co/badges/5d0a7cfd-3dfb-4cc9-bd4f-f310c02068eb)](https://codebeat.co/projects/github-com-llorllale-go-gitlint-master)
@@ -87,7 +87,7 @@ Usage: ./download-gitlint.sh [-b] bindir [-d] [tag]
 Fork this repo, make sure `make checks` works, **and then** open a PR.
 
 ## Build dependencies
-To run `make checks` you will need Go `1.14.x` and Ruby `2.x` (for `pdd` - see  below).
+To run `make checks` you will need Go `1.16.x` and Ruby `2.x` (for `pdd` - see  below).
 [Ruby Version Manager](https://rvm.io/) is highly recommended.
 
 The `make dependencies` recipe attempts to download and install the following:

@@ -12,4 +12,4 @@ require (
 	gopkg.in/src-d/go-git.v4 v4.10.0
 )
 
-go 1.13
+go 1.16
