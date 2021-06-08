@@ -1,8 +1,8 @@
-dist: precise
+dist: focal
 
 language: go
 go:
-  - "1.14.x"
+  - "1.16.x"
 
 # PDD needs ruby version 2.3 or above
 before_install:
