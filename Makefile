@@ -29,7 +29,7 @@
 
 build:
 	@echo "Building..."
-	@go build -o gitlint cmd/go-gitlint/main.go
+	@go build -o gitlint main.go
 
 test:
 	@echo "Running unit tests..."

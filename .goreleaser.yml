@@ -15,7 +15,7 @@ builds:
   -
     env:
       - CGO_ENABLED=0
-    main: ./cmd/go-gitlint/main.go
+    main: ./main.go
     binary: gitlint
     goos:
       - linux
