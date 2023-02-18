@@ -16,7 +16,7 @@
 # 
 
 let THRESHOLD=80
-IGNORE=github.com/llorllale/go-gitlint/cmd/go-gitlint
+IGNORE=github.com/llorllale/go-gitlint
 
 let exit_code=0
 
