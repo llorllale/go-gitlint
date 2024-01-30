@@ -22,17 +22,18 @@ import (
 	"strings"
 	"time"
 
+	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/llorllale/go-gitlint/internal/repo"
-	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 // Commits returns commits.
 // @todo #4 Figure out how to disable the golint check that
-//  forces us to write redundant comments of the form
-//  'comment on exported type Commits should be of the form
-//  "Commits ..." (with optional leading article)' and rewrite
-//  all comments.
+//
+//	forces us to write redundant comments of the form
+//	'comment on exported type Commits should be of the form
+//	"Commits ..." (with optional leading article)' and rewrite
+//	all comments.
 type Commits func() []*Commit
 
 // Commit holds data for a single git commit.
@@ -79,8 +80,9 @@ func (c *Commit) Body() string {
 
 // In returns the commits in the repo.
 // @todo #4 These err checks are extremely annoying. Figure out
-//  how to handle them elegantly and reduce the cyclo complexity
-//  of this function (currently at 4).
+//
+//	how to handle them elegantly and reduce the cyclo complexity
+//	of this function (currently at 4).
 func In(repository repo.Repo) Commits {
 	return func() []*Commit {
 		r := repository()
