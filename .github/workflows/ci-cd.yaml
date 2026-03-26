@@ -31,7 +31,9 @@ jobs:
       - name: Run checks
         run: make checks
       - name: Coverage Report
-        run: bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Release
         if: ${{ github.branch == 'master' && startsWith(github.ref, 'refs/tags/') }}
         uses: goreleaser/goreleaser-action@v7
