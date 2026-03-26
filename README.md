@@ -1,5 +1,5 @@
 [![Release](https://img.shields.io/github/release/llorllale/go-gitlint.svg?style=flat-square)](https://github.com/llorllale/go-gitlint/releases/latest)
-[![Build Status](https://travis-ci.com/llorllale/go-gitlint.svg?branch=master)](https://travis-ci.com/llorllale/go-gitlint)
+![Build Status](https://github.com/llorllale/go-gitlint/actions/workflows/ci-cd.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/llorllale/go-gitlint/branch/master/graph/badge.svg)](https://codecov.io/gh/llorllale/go-gitlint)
 [![Go Report Card](https://goreportcard.com/badge/github.com/llorllale/go-gitlint?style=flat-square)](https://goreportcard.com/report/github.com/llorllale/go-gitlint)
 [![Powered By: GoReleaser](https://img.shields.io/badge/powered%20by-goreleaser-green.svg)](https://github.com/goreleaser)
