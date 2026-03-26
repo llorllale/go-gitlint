@@ -33,7 +33,7 @@ build:
 
 test:
 	@echo "Running unit tests..."
-	@go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./... | tee cov_check.txt
+	@go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./...
 
 coverage: test
 	@echo "Verifying test coverage..."

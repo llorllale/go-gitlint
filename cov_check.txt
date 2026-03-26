@@ -1,0 +1,4 @@
+	github.com/llorllale/go-gitlint		coverage: 0.0% of statements
+ok  	github.com/llorllale/go-gitlint/internal/commits	1.032s	coverage: 87.7% of statements
+ok  	github.com/llorllale/go-gitlint/internal/issues	1.012s	coverage: 91.8% of statements
+ok  	github.com/llorllale/go-gitlint/internal/repo	1.032s	coverage: 80.0% of statements
