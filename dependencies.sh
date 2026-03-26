@@ -46,7 +46,7 @@ installWeasel() {
 
   if [ -z "$installed" ]; then
     echo "weasel not found. Installing..."
-    (cd $(mktemp -d) && go get github.com/comcast/weasel)
+    (cd $(mktemp -d) && go install github.com/comcast/weasel@latest)
   fi
 }
 
