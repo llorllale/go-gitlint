@@ -2,7 +2,6 @@
 [![Build Status](https://travis-ci.com/llorllale/go-gitlint.svg?branch=master)](https://travis-ci.com/llorllale/go-gitlint)
 [![codecov](https://codecov.io/gh/llorllale/go-gitlint/branch/master/graph/badge.svg)](https://codecov.io/gh/llorllale/go-gitlint)
 [![Go Report Card](https://goreportcard.com/badge/github.com/llorllale/go-gitlint?style=flat-square)](https://goreportcard.com/report/github.com/llorllale/go-gitlint)
-[![codebeat badge](https://codebeat.co/badges/5d0a7cfd-3dfb-4cc9-bd4f-f310c02068eb)](https://codebeat.co/projects/github-com-llorllale-go-gitlint-master)
 [![Powered By: GoReleaser](https://img.shields.io/badge/powered%20by-goreleaser-green.svg)](https://github.com/goreleaser)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/llorllale/go-gitlint)
 [![PDD status](http://www.0pdd.com/svg?name=llorllale/go-gitlint)](http://www.0pdd.com/p?name=llorllale/go-gitlint)
