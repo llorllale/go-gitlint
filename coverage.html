@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>commits: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/llorllale/go-gitlint/internal/commits/commits.go (87.7%)</option>
+				
+				<option value="file1">github.com/llorllale/go-gitlint/internal/issues/filters.go (93.5%)</option>
+				
+				<option value="file2">github.com/llorllale/go-gitlint/internal/issues/issues.go (88.9%)</option>
+				
+				<option value="file3">github.com/llorllale/go-gitlint/internal/repo/repo.go (80.0%)</option>
+				
+				<option value="file4">github.com/llorllale/go-gitlint/main.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Copyright 2026 George Aristy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package commits defines the representations of git commit objects.
+package commits
+
+import (
+        "io"
+        "regexp"
+        "strings"
+        "time"
+
+        "github.com/llorllale/go-gitlint/internal/repo"
+        git "gopkg.in/src-d/go-git.v4"
+        "gopkg.in/src-d/go-git.v4/plumbing/object"
+)
+
+// Commits returns commits.
+// @todo #4 Figure out how to disable the golint check that
+//  forces us to write redundant comments of the form
+//  'comment on exported type Commits should be of the form
+//  "Commits ..." (with optional leading article)' and rewrite
+//  all comments.
+type Commits func() []*Commit
+
+// Commit holds data for a single git commit.
+type Commit struct {
+        Hash       string
+        Message    string
+        Date       time.Time
+        NumParents int
+        Author     *Author
+}
+
+// Author is the author of a commit.
+type Author struct {
+        Name  string
+        Email string
+}
+
+// ID is the commit's hash.
+func (c *Commit) ID() string <span class="cov8" title="1">{
+        return c.Hash
+}</span>
+
+// ShortID returns the commit hash's short form.
+func (c *Commit) ShortID() string <span class="cov8" title="1">{
+        return c.Hash[:7]
+}</span>
+
+// Subject is the commit message's subject line.
+func (c *Commit) Subject() string <span class="cov8" title="1">{
+        return strings.Split(c.Message, "\n")[0]
+}</span>
+
+// Body is the commit message's body.
+func (c *Commit) Body() string <span class="cov8" title="1">{
+        body := ""
+        parts := strings.Split(c.Message, "\n\n")
+
+        if len(parts) &gt; 1 </span><span class="cov8" title="1">{
+                body = strings.Join(parts[1:], "")
+        }</span>
+
+        <span class="cov8" title="1">return body</span>
+}
+
+// In returns the commits in the repo.
+// @todo #4 These err checks are extremely annoying. Figure out
+//  how to handle them elegantly and reduce the cyclo complexity
+//  of this function (currently at 4).
+func In(repository repo.Repo) Commits <span class="cov8" title="1">{
+        return func() []*Commit </span><span class="cov8" title="1">{
+                r := repository()
+
+                ref, err := r.Head()
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">iter, err := r.Log(&amp;git.LogOptions{From: ref.Hash()})
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">commits := make([]*Commit, 0)
+
+                err = iter.ForEach(func(c *object.Commit) error </span><span class="cov8" title="1">{
+                        commits = append(
+                                commits,
+                                &amp;Commit{
+                                        Hash:       c.Hash.String(),
+                                        Message:    c.Message,
+                                        Date:       c.Author.When,
+                                        NumParents: len(c.ParentHashes),
+                                        Author: &amp;Author{
+                                                Name:  c.Author.Name,
+                                                Email: c.Author.Email,
+                                        },
+                                },
+                        )
+
+                        return nil
+                }</span>)
+                <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">return commits</span>
+        }
+}
+
+// Since returns commits authored since time t (format: yyyy-MM-dd).
+func Since(t string, cmts Commits) Commits <span class="cov8" title="1">{
+        return filtered(
+                func(c *Commit) bool </span><span class="cov8" title="1">{
+                        start, err := time.Parse("2006-01-02", t)
+                        if err != nil </span><span class="cov0" title="0">{
+                                panic(err)</span>
+                        }
+                        <span class="cov8" title="1">return !c.Date.Before(start)</span>
+                },
+                cmts,
+        )
+}
+
+// NotAuthoredByNames filters out commits with authors whose names match any of the given patterns.
+func NotAuthoredByNames(patterns []string, cmts Commits) Commits <span class="cov8" title="1">{
+        return filtered(
+                func(c *Commit) bool </span><span class="cov8" title="1">{
+                        for _, p := range patterns </span><span class="cov8" title="1">{
+                                match, err := regexp.MatchString(p, c.Author.Name)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        panic(err)</span>
+                                }
+                                <span class="cov8" title="1">if match </span><span class="cov8" title="1">{
+                                        return false
+                                }</span>
+                        }
+                        <span class="cov8" title="1">return true</span>
+                },
+                cmts,
+        )
+}
+
+// NotAuthoredByEmails filters out commits with authors whose emails match any
+// of the given patterns.
+func NotAuthoredByEmails(patterns []string, cmts Commits) Commits <span class="cov8" title="1">{
+        return filtered(
+                func(c *Commit) bool </span><span class="cov8" title="1">{
+                        for _, p := range patterns </span><span class="cov8" title="1">{
+                                match, err := regexp.MatchString(p, c.Author.Email)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        panic(err)</span>
+                                }
+                                <span class="cov8" title="1">if match </span><span class="cov8" title="1">{
+                                        return false
+                                }</span>
+                        }
+                        <span class="cov8" title="1">return true</span>
+                },
+                cmts,
+        )
+}
+
+// WithMaxParents returns commits that have at most n number of parents.
+// Useful for excluding merge commits.
+func WithMaxParents(n int, cmts Commits) Commits <span class="cov8" title="1">{
+        return filtered(
+                func(c *Commit) bool </span><span class="cov8" title="1">{
+                        return c.NumParents &lt;= n
+                }</span>,
+                cmts,
+        )
+}
+
+// MsgIn returns a single fake commit with the message read from this reader.
+// This fake commit will have a fake hash and its timestamp will be time.Now().
+func MsgIn(reader io.Reader) Commits <span class="cov8" title="1">{
+        return func() []*Commit </span><span class="cov8" title="1">{
+                b, err := io.ReadAll(reader)
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">return []*Commit{{
+                        Hash:    "fakehsh",
+                        Message: string(b),
+                        Date:    time.Now(),
+                }}</span>
+        }
+}
+
+func filtered(filter func(*Commit) bool, in Commits) (out Commits) <span class="cov8" title="1">{
+        return func() []*Commit </span><span class="cov8" title="1">{
+                f := make([]*Commit, 0)
+
+                for _, c := range in() </span><span class="cov8" title="1">{
+                        if filter(c) </span><span class="cov8" title="1">{
+                                f = append(f, c)
+                        }</span>
+                }
+
+                <span class="cov8" title="1">return f</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Copyright 2026 George Aristy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package issues
+
+import (
+        "fmt"
+        "regexp"
+
+        "github.com/llorllale/go-gitlint/internal/commits"
+)
+
+// Filter identifies an issue with a commit.
+// A filter returning a zero-valued Issue signals that it found no issue
+// with the commit.
+type Filter func(*commits.Commit) Issue
+
+// OfSubjectRegex tests a commit's subject with the regex.
+func OfSubjectRegex(regex string) Filter <span class="cov8" title="1">{
+        return func(c *commits.Commit) Issue </span><span class="cov8" title="1">{
+                var issue Issue
+
+                matched, err := regexp.MatchString(regex, c.Subject())
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">if !matched </span><span class="cov8" title="1">{
+                        issue = Issue{
+                                Desc:   fmt.Sprintf("subject does not match regex [%s]", regex),
+                                Commit: *c,
+                        }
+                }</span>
+
+                <span class="cov8" title="1">return issue</span>
+        }
+}
+
+// OfBodyRegex tests a commit's body with the regex.
+func OfBodyRegex(regex string) Filter <span class="cov8" title="1">{
+        return func(c *commits.Commit) Issue </span><span class="cov8" title="1">{
+                var issue Issue
+
+                matched, err := regexp.MatchString(regex, c.Body())
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">if !matched </span><span class="cov8" title="1">{
+                        issue = Issue{
+                                Desc:   fmt.Sprintf("body does not conform to regex [%s]", regex),
+                                Commit: *c,
+                        }
+                }</span>
+
+                <span class="cov8" title="1">return issue</span>
+        }
+}
+
+// OfSubjectMaxLength checks that a commit's subject does not exceed this length.
+func OfSubjectMaxLength(length int) Filter <span class="cov8" title="1">{
+        return func(c *commits.Commit) Issue </span><span class="cov8" title="1">{
+                var issue Issue
+
+                if len(c.Subject()) &gt; length </span><span class="cov8" title="1">{
+                        issue = Issue{
+                                Desc:   fmt.Sprintf("subject length exceeds max [%d]", length),
+                                Commit: *c,
+                        }
+                }</span>
+
+                <span class="cov8" title="1">return issue</span>
+        }
+}
+
+// OfSubjectMinLength checks that a commit's subject's length is at least
+// of length min.
+func OfSubjectMinLength(min int) Filter <span class="cov8" title="1">{
+        return func(c *commits.Commit) Issue </span><span class="cov8" title="1">{
+                var issue Issue
+
+                if len(c.Subject()) &lt; min </span><span class="cov8" title="1">{
+                        issue = Issue{
+                                Desc:   fmt.Sprintf("subject length less than min [%d]", min),
+                                Commit: *c,
+                        }
+                }</span>
+
+                <span class="cov8" title="1">return issue</span>
+        }
+}
+
+// OfBodyMaxLength checks that a commit's body's length doesn't exceed this
+// max number of characters.
+func OfBodyMaxLength(max int) Filter <span class="cov8" title="1">{
+        return func(c *commits.Commit) Issue </span><span class="cov8" title="1">{
+                var issue Issue
+
+                if len(c.Body()) &gt; max </span><span class="cov8" title="1">{
+                        issue = Issue{
+                                Desc:   fmt.Sprintf("body length exceeds max [%d]", max),
+                                Commit: *c,
+                        }
+                }</span>
+
+                <span class="cov8" title="1">return issue</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">// Copyright 2026 George Aristy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package issues provides filters for problems found in commit messages.
+package issues
+
+import (
+        "io"
+
+        "github.com/fatih/color"
+        "github.com/llorllale/go-gitlint/internal/commits"
+)
+
+// Issue is a problem found with a commit.
+type Issue struct {
+        Desc   string
+        Commit commits.Commit
+}
+
+// Issues is a collection of Issues.
+type Issues func() []Issue
+
+// Collected returns a collection of issues identified.
+func Collected(filters []Filter, cmts commits.Commits) Issues <span class="cov8" title="1">{
+        return func() []Issue </span><span class="cov8" title="1">{
+                issues := make([]Issue, 0)
+
+                for _, c := range cmts() </span><span class="cov8" title="1">{
+                        for _, f := range filters </span><span class="cov8" title="1">{
+                                if issue := f(c); issue != (Issue{}) </span><span class="cov8" title="1">{
+                                        issues = append(issues, issue)
+                                }</span>
+                        }
+                }
+
+                <span class="cov8" title="1">return issues</span>
+        }
+}
+
+// Printed prints the issues to the writer.
+func Printed(w io.Writer, sep string, issues Issues) Issues <span class="cov8" title="1">{
+        return func() []Issue </span><span class="cov8" title="1">{
+                iss := issues()
+
+                for idx := range iss </span><span class="cov8" title="1">{
+                        i := iss[idx]
+
+                        _, err := color.New(color.Bold).Fprintf(w, "%s: ", i.Commit.ShortID())
+                        if err != nil </span><span class="cov0" title="0">{
+                                panic(err)</span>
+                        }
+
+                        <span class="cov8" title="1">_, err = color.New(color.FgRed).Fprintf(w, "%s%s", i.Desc, sep)
+                        if err != nil </span><span class="cov0" title="0">{
+                                panic(err)</span>
+                        }
+                }
+
+                <span class="cov8" title="1">return iss</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// Copyright 2026 George Aristy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package repo is the API for fetching repos.
+package repo
+
+import (
+        git "gopkg.in/src-d/go-git.v4"
+)
+
+// Repo is an initialized git repository.
+type Repo func() *git.Repository
+
+// Filesystem is a pre-existing git repository on the filesystem
+// with directory as root.
+func Filesystem(directory string) Repo <span class="cov8" title="1">{
+        return func() *git.Repository </span><span class="cov8" title="1">{
+                repo, err := git.PlainOpen(directory)
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov8" title="1">return repo</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Copyright 2026 George Aristy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+        "math"
+        "os"
+        "strconv"
+        "strings"
+
+        "github.com/llorllale/go-gitlint/internal/commits"
+        "github.com/llorllale/go-gitlint/internal/issues"
+        "github.com/llorllale/go-gitlint/internal/repo"
+        kingpin "gopkg.in/alecthomas/kingpin.v2"
+)
+
+// @todo #9 Global variables are a code smell (especially those in filterse.go).
+//  They promote coupling across different components inside the same package.
+//  Figure out a way to remove these global variables. Whatever command line
+//  parser we choose should be able to auto-generate usage.
+var (
+        path             = kingpin.Flag("path", `Path to the git repo (default: ".").`).Default(".").String()                                                                                         //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        subjectRegex     = kingpin.Flag("subject-regex", `Commit subject line must conform to this regular expression (default: ".*").`).Default(".*").String()                                       //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        subjectMaxLength = kingpin.Flag("subject-maxlen", "Max length for commit subject line (default: math.MaxInt32 - 1).").Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                          //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        subjectMinLength = kingpin.Flag("subject-minlen", "Min length for commit subject line (default: 0).").Default("0").Int()                                                                      //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        bodyRegex        = kingpin.Flag("body-regex", `Commit message body must conform to this regular expression (default: ".*").`).Default(".*").String()                                          //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        bodyMaxLength    = kingpin.Flag("body-maxlen", `Max length for commit body (default: math.MaxInt32 - 1)`).Default(strconv.Itoa(math.MaxInt32 - 1)).Int()                                      //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        since            = kingpin.Flag("since", `A date in "yyyy-MM-dd" format starting from which commits will be analyzed (default: "1970-01-01").`).Default("1970-01-01").String()                //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        msgFile          = kingpin.Flag("msg-file", `Only analyze the commit message found in this file (default: "").`).Default("").String()                                                         //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        maxParents       = kingpin.Flag("max-parents", `Max number of parents a commit can have in order to be analyzed (default: 1). Useful for excluding merge commits.`).Default("1").Int()        //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        authorNames      = kingpin.Flag("excl-author-names", "Don't lint commits with authors whose names match these comma-separated regular expressions (default: '$a').").Default("$a").String()   //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+        authorEmails     = kingpin.Flag("excl-author-emails", "Don't lint commits with authors whose emails match these comma-separated regular expressions (default: '$a').").Default("$a").String() //nolint:lll,gochecknoglobals // https://github.com/llorllale/go-gitlint/issues/23
+)
+
+func main() <span class="cov0" title="0">{
+        configure()
+        os.Exit(
+                len(
+                        issues.Printed(
+                                os.Stdout, "\n",
+                                issues.Collected(
+                                        []issues.Filter{
+                                                issues.OfSubjectRegex(*subjectRegex),
+                                                issues.OfSubjectMaxLength(*subjectMaxLength),
+                                                issues.OfSubjectMinLength(*subjectMinLength),
+                                                issues.OfBodyRegex(*bodyRegex),
+                                                issues.OfBodyMaxLength(*bodyMaxLength),
+                                        },
+                                        try(
+                                                len(*msgFile) &gt; 0,
+                                                func() commits.Commits </span><span class="cov0" title="0">{
+                                                        file, err := os.Open(*msgFile)
+                                                        if err != nil </span><span class="cov0" title="0">{
+                                                                panic(err)</span>
+                                                        }
+                                                        <span class="cov0" title="0">return commits.MsgIn(file)</span>
+                                                },
+                                                func() commits.Commits <span class="cov0" title="0">{
+                                                        return commits.NotAuthoredByNames(
+                                                                strings.Split(*authorNames, ","),
+                                                                commits.NotAuthoredByEmails(
+                                                                        strings.Split(*authorEmails, ","),
+                                                                        commits.WithMaxParents(
+                                                                                *maxParents,
+                                                                                commits.Since(
+                                                                                        *since,
+                                                                                        commits.In(
+                                                                                                repo.Filesystem(*path),
+                                                                                        ),
+                                                                                ),
+                                                                        ),
+                                                                ),
+                                                        )
+                                                }</span>,
+                                        ),
+                                ),
+                        )(),
+                ),
+        )
+}
+
+func configure() <span class="cov0" title="0">{
+        const file = ".gitlint"
+
+        args := os.Args[1:]
+
+        if _, err := os.Stat(file); err == nil </span><span class="cov0" title="0">{
+                config, err := kingpin.ExpandArgsFromFile(file)
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov0" title="0">args = append(args, config...)</span>
+        }
+
+        <span class="cov0" title="0">if _, err := kingpin.CommandLine.Parse(unique(args)); err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+}
+
+func unique(args []string) []string <span class="cov0" title="0">{
+        u := make([]string, 0)
+        flags := make([]string, 0)
+
+        for _, a := range args </span><span class="cov0" title="0">{
+                name := strings.Split(a, "=")[0]
+
+                if !contains(name, flags) </span><span class="cov0" title="0">{
+                        u = append(u, a)
+                        flags = append(flags, name)
+                }</span>
+        }
+
+        <span class="cov0" title="0">return u</span>
+}
+
+func contains(s string, strs []string) bool <span class="cov0" title="0">{
+        for _, str := range strs </span><span class="cov0" title="0">{
+                if s == str </span><span class="cov0" title="0">{
+                        return true
+                }</span>
+        }
+
+        <span class="cov0" title="0">return false</span>
+}
+
+func try(cond bool, actual, dflt func() commits.Commits) commits.Commits <span class="cov0" title="0">{
+        if cond </span><span class="cov0" title="0">{
+                return actual()
+        }</span>
+
+        <span class="cov0" title="0">return dflt()</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

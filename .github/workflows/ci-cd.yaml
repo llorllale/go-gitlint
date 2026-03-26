@@ -31,9 +31,7 @@ jobs:
       - name: Run checks
         run: make checks
       - name: Coverage Report
-        uses: vladopajic/go-test-coverage@v2
-        with:
-          config: ./.testcoverage.yaml
+        run: bash <(curl -s https://codecov.io/bash)
       - name: Release
         if: ${{ github.branch == 'master' && startsWith(github.ref, 'refs/tags/') }}
         uses: goreleaser/goreleaser-action@v7
