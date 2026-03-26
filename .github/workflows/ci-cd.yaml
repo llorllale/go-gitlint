@@ -33,7 +33,7 @@ jobs:
       - name: Coverage Report
         uses: vladopajic/go-test-coverage@v2
         with:
-          config: ./.testcoverage.yml
+          config: ./.testcoverage.yaml
       - name: Release
         if: ${{ github.branch == 'master' && startsWith(github.ref, 'refs/tags/') }}
         uses: goreleaser/goreleaser-action@v7
