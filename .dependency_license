@@ -17,3 +17,4 @@ download-gitlint.sh, Ignore
 \.pre-commit-config\.yaml, Ignore
 \.testcoverage\.yaml, Ignore
 \.github/workflows/ci-cd\.yaml, Ignore
+codecov\.yaml, Ignore
