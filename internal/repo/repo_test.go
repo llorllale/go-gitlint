@@ -1,4 +1,4 @@
-// Copyright 2019 George Aristy
+// Copyright 2026 George Aristy
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@ package repo_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/src-d/go-git.v4"
@@ -53,19 +50,9 @@ func TestFilesystem(t *testing.T) {
 }
 
 func tmpGitRepo(t *testing.T, msgs ...string) (r *git.Repository, folder string) {
-	var err error
+	folder = t.TempDir()
 
-	folder, err = ioutil.TempDir(
-		"",
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
-	)
-	require.NoError(t, err)
-
-	t.Cleanup(func() {
-		require.NoError(t, os.RemoveAll(folder))
-	})
-
-	r, err = git.PlainInit(folder, false)
+	r, err := git.PlainInit(folder, false)
 	require.NoError(t, err)
 
 	wt, err := r.Worktree()
@@ -74,7 +61,7 @@ func tmpGitRepo(t *testing.T, msgs ...string) (r *git.Repository, folder string)
 	for i, msg := range msgs {
 		file := fmt.Sprintf("msg%d.txt", i)
 
-		err = ioutil.WriteFile(filepath.Join(folder, file), []byte(msg), 0600)
+		err = os.WriteFile(filepath.Join(folder, file), []byte(msg), 0600)
 		require.NoError(t, err)
 
 		_, err = wt.Add(file)

@@ -7,6 +7,7 @@
 #    # you may remove this if you don't need go generate
 #    - go generate ./...
 
+version: 2
 project_name: go-gitlint
 before:
   hooks:
@@ -22,17 +23,31 @@ builds:
       - windows
       - darwin
     goarch:
-      - 386
+      - "386"
       - amd64
-archive:
-  replacements:
-    darwin: osx
-    386: x86_32
-    amd64: x86_64
+archives:
+  - formats: [ tar.gz ]
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [ zip ]
 release:
   name_template: "{{.Tag}}"
   prerelease: auto
+  footer: >-
+
+    ---
+
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
 changelog:
+  sort: asc
   filters:
     exclude:
     - '^docs:'

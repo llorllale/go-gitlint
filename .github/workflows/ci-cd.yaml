@@ -1,0 +1,44 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  ci:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.3
+      - name: Setup Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: 3.12.3
+      - name: Run checks
+        run: make checks
+      - name: Coverage Report
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Release
+        if: ${{ github.branch == 'master' && startsWith(github.ref, 'refs/tags/') }}
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: 'goreleaser'
+          version: v2.14.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

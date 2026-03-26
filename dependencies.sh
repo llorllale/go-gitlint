@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2019 George Aristy
+# Copyright 2026 George Aristy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,23 @@ ensureRuby2xInstalled() {
   fi
 }
 
+ensurePython3xInstalled() {
+  result=$(python3 --version)
+
+  if [ -z "$result" ]; then
+    echo "Please install Python 3.x!"
+    exit 1
+  fi
+
+  version=$(echo $result | cut -d " " -f 2)
+  matched=$([[ $version =~ 3\..* ]] && echo matched)
+
+  if [ -z "$matched" ]; then
+    echo "You have Python $version installed - please install a 3.x version."
+    exit 1
+  fi
+}
+
 installPDD() {
   installed=$(pdd -h && echo yes)
 
@@ -41,39 +58,29 @@ installPDD() {
   fi
 }
 
-installGolangCILint() {
-  VERSION=1.29.0
-  installed=$(golangci-lint --version)
-
-  if [ -z "$installed" ]; then
-    echo "golangci-lint not found. Installing..."
-    curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v$VERSION
-
-    return 0
-  fi
-
-  version=$(echo $installed | cut -d " " -f 4)
-  matched=$([[ $version =~ $VERSION ]] && echo matched)
-
-  if [ -z "$matched" ]; then
-    echo "You have golangci-lint $version installed. Please install version v$VERSION."
-    exit 1
-  fi
-}
-
 installWeasel() {
   installed=$(weasel -v && echo yes)
 
   if [ -z "$installed" ]; then
     echo "weasel not found. Installing..."
-    (cd $(mktemp -d) && go get github.com/comcast/weasel)
+    (cd "$(mktemp -d)" && go install github.com/comcast/weasel@latest)
+  fi
+}
+
+installPreCommit() {
+  installed=$(pre-commit --version && echo yes)
+
+  if [ -z "$installed" ]; then
+    echo "pre-commit not found. Installing..."
+    pip3 install pre-commit
   fi
 }
 
 main() {
   ensureRuby2xInstalled
   installPDD
-  installGolangCILint
+  ensurePython3xInstalled
+  installPreCommit
   installWeasel
 }
 

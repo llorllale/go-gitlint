@@ -14,3 +14,6 @@ go\.sum, Ignore
 \.idea, Ignore
 \.vscode, Ignore
 download-gitlint.sh, Ignore
+\.pre-commit-config\.yaml, Ignore
+\.testcoverage\.yaml, Ignore
+\.github/workflows/ci-cd\.yaml, Ignore

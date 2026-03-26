@@ -1,5 +1,5 @@
 #
-# Copyright 2019 George Aristy
+# Copyright 2026 George Aristy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,11 +33,12 @@ build:
 
 test:
 	@echo "Running unit tests..."
-	@go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./... | tee cov_check.txt
+	@go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./...
 
-coverage:
+coverage: test
 	@echo "Verifying test coverage..."
-	@./check_coverage.sh
+	@go install github.com/vladopajic/go-test-coverage/v2@v2.18.4
+	@go-test-coverage --config=./.testcoverage.yaml
 
 dependencies:
 	@echo "Ensuring dependencies..."
@@ -45,7 +46,7 @@ dependencies:
 
 lint: dependencies
 	@echo "Running linter..."
-	@golangci-lint run
+	@pre-commit run -a
 
 pdd: dependencies
 	@echo "Scanning for puzzles..."
@@ -56,7 +57,3 @@ license: dependencies
 	@weasel
 
 checks: build lint pdd license test coverage
-
-release:
-	@echo "Releasing..."
-	@./release.sh
