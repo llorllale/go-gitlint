@@ -68,7 +68,7 @@ installWeasel() {
 }
 
 installPreCommit() {
-  installed=${pre-commit --version && echo yes}
+  installed=$(pre-commit --version && echo yes)
 
   if [ -z "$installed" ]; then
     echo "pre-commit not found. Installing..."
