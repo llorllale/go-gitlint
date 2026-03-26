@@ -32,6 +32,23 @@ ensureRuby2xInstalled() {
   fi
 }
 
+ensurePython3xInstalled() {
+  result=$(python3 --version)
+
+  if [ -z "$result" ]; then
+    echo "Please install Python 3.x!"
+    exit 1
+  fi
+
+  version=$(echo $result | cut -d " " -f 2)
+  matched=$([[ $version =~ 3\..* ]] && echo matched)
+
+  if [ -z "$matched" ]; then
+    echo "You have Python $version installed - please install a 3.x version."
+    exit 1
+  fi
+}
+
 installPDD() {
   installed=$(pdd -h && echo yes)
 
@@ -46,13 +63,24 @@ installWeasel() {
 
   if [ -z "$installed" ]; then
     echo "weasel not found. Installing..."
-    (cd $(mktemp -d) && go install github.com/comcast/weasel@latest)
+    (cd "$(mktemp -d)" && go install github.com/comcast/weasel@latest)
+  fi
+}
+
+installPreCommit() {
+  installed=${pre-commit --version && echo yes}
+
+  if [ -z "$installed" ]; then
+    echo "pre-commit not found. Installing..."
+    (cd "$(mktemp -d)" && pip3 install pre-commit)
   fi
 }
 
 main() {
   ensureRuby2xInstalled
   installPDD
+  ensurePython3xInstalled
+  installPreCommit
   installWeasel
 }
 
