@@ -93,6 +93,6 @@ To run `make checks` you will need Go `1.16.x` and Ruby `2.x` (for `pdd` - see  
 The `make dependencies` recipe attempts to download and install the following:
 
 * [pdd](https://github.com/yegor256/pdd)
-* [golangci-lint](https://github.com/golangci/golangci-lint) v1.29.0
+* [pre-commit](https://pre-commit.com/)
 * [weasel](https://github.com/comcast/weasel)
 

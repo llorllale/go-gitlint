@@ -1,0 +1,9 @@
+profile: coverage.txt
+local-prefix: "github.com/llorllale/go-gitlint"
+threshold:
+  file: 70
+  package: 80
+  total: 80
+exclude:
+  paths:
+    - main.go

@@ -16,7 +16,6 @@ package commits_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -169,15 +168,7 @@ func randomAuthor() *commits.Author {
 // This repo is created in a temporary directory; use the cleanup function
 // to delete it afterwards.
 func tmpRepo(t *testing.T, msgs ...string) repo.Repo {
-	folder, err := ioutil.TempDir(
-		"",
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
-	)
-	require.NoError(t, err)
-
-	t.Cleanup(func() {
-		require.NoError(t, os.RemoveAll(folder))
-	})
+	folder := t.TempDir()
 
 	return func() *git.Repository {
 		r, err := git.PlainInit(folder, false)
@@ -189,7 +180,7 @@ func tmpRepo(t *testing.T, msgs ...string) repo.Repo {
 		for i, msg := range msgs {
 			file := fmt.Sprintf("msg%d.txt", i)
 
-			err = ioutil.WriteFile(filepath.Join(folder, file), []byte(msg), 0600)
+			err = os.WriteFile(filepath.Join(folder, file), []byte(msg), 0600)
 			require.NoError(t, err)
 
 			_, err = wt.Add(file)

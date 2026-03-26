@@ -41,26 +41,6 @@ installPDD() {
   fi
 }
 
-installGolangCILint() {
-  VERSION=1.29.0
-  installed=$(golangci-lint --version)
-
-  if [ -z "$installed" ]; then
-    echo "golangci-lint not found. Installing..."
-    curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v$VERSION
-
-    return 0
-  fi
-
-  version=$(echo $installed | cut -d " " -f 4)
-  matched=$([[ $version =~ $VERSION ]] && echo matched)
-
-  if [ -z "$matched" ]; then
-    echo "You have golangci-lint $version installed. Please install version v$VERSION."
-    exit 1
-  fi
-}
-
 installWeasel() {
   installed=$(weasel -v && echo yes)
 
@@ -73,7 +53,6 @@ installWeasel() {
 main() {
   ensureRuby2xInstalled
   installPDD
-  installGolangCILint
   installWeasel
 }
 

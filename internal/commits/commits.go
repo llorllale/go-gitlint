@@ -17,7 +17,6 @@ package commits
 
 import (
 	"io"
-	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
@@ -190,7 +189,7 @@ func WithMaxParents(n int, cmts Commits) Commits {
 // This fake commit will have a fake hash and its timestamp will be time.Now().
 func MsgIn(reader io.Reader) Commits {
 	return func() []*Commit {
-		b, err := ioutil.ReadAll(reader)
+		b, err := io.ReadAll(reader)
 		if err != nil {
 			panic(err)
 		}

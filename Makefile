@@ -35,9 +35,10 @@ test:
 	@echo "Running unit tests..."
 	@go test -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic ./... | tee cov_check.txt
 
-coverage:
+coverage: test
 	@echo "Verifying test coverage..."
-	@./check_coverage.sh
+	@go install github.com/vladopajic/go-test-coverage/v2@v2.18.4
+	@go-test-coverage --config=./.testcoverage.yaml
 
 dependencies:
 	@echo "Ensuring dependencies..."
@@ -45,7 +46,7 @@ dependencies:
 
 lint: dependencies
 	@echo "Running linter..."
-	@golangci-lint run
+	@pre-commit run -a
 
 pdd: dependencies
 	@echo "Scanning for puzzles..."
