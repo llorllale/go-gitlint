@@ -57,7 +57,3 @@ license: dependencies
 	@weasel
 
 checks: build lint pdd license test coverage
-
-release:
-	@echo "Releasing..."
-	@./release.sh
