@@ -72,7 +72,7 @@ installPreCommit() {
 
   if [ -z "$installed" ]; then
     echo "pre-commit not found. Installing..."
-    (cd "$(mktemp -d)" && pip3 install pre-commit)
+    pip3 install pre-commit
   fi
 }
 
