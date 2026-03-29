@@ -56,4 +56,9 @@ license: dependencies
 	@echo "Verifying license headers..."
 	@weasel
 
-checks: build lint pdd license test coverage
+vuln:
+	@echo "Scanning for vulnerabilities..."
+	@go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+	@govulncheck ./...
+
+checks: build lint vuln pdd license test coverage
