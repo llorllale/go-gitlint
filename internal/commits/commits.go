@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/llorllale/go-gitlint/internal/repo"
-	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	git "github.com/go-git/go-git/v6"
+	"github.com/go-git/go-git/v6/plumbing/object"
 )
 
 // Commits returns commits.
