@@ -58,7 +58,7 @@ license: dependencies
 
 vuln:
 	@echo "Scanning for vulnerabilities..."
-	@go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+	@go install golang.org/x/vuln/cmd/govulncheck@v1.2.0
 	@govulncheck ./...
 
 checks: build lint vuln pdd license test coverage
