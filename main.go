@@ -20,10 +20,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/alecthomas/kingpin/v2"
 	"github.com/llorllale/go-gitlint/internal/commits"
 	"github.com/llorllale/go-gitlint/internal/issues"
 	"github.com/llorllale/go-gitlint/internal/repo"
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func main() {
