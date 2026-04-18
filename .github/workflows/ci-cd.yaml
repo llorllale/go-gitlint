@@ -23,7 +23,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.25.8
+          go-version: 1.26.2
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
